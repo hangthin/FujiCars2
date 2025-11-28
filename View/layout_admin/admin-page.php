@@ -30,15 +30,6 @@ include "Controller/handle-admin/admin_dashboard_data.php";
   </div>
 </div>
 
-
-
-
-
-
-
-
-
-
 <!-- include socket.io client -->
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <!-- CHATBOX ICON -->
@@ -54,14 +45,9 @@ include "Controller/handle-admin/admin_dashboard_data.php";
 </div>
 
 <!-- POPUP -->
-<div id="orderPopup">
-    <span class="closeBtn" onclick="closeOrderPopup()">×</span>
-    <h4>Thông tin đơn hàng</h4>
-    <div id="popupContent"></div>
-</div>
+
 <!-- load your admin JS after socket.io -->
-<script src="js/update-invoice.js"></script>
-<script src="js/check_new_oder.js"></script>
+
 
 
 
@@ -219,6 +205,8 @@ window.chartData = {
 
 <!-- DASHBOARD JS (bao gồm realtime) -->
 <script src="js/admin_dashboard.js"></script>
+<script src="js/update-invoice.js"></script>
+<script src="js/check_new_oder.js"></script>
 
 <!-- LOADING JS -->
 <script><?php include "js/car_loading.js"; ?></script>

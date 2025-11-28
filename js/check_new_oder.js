@@ -1,145 +1,138 @@
-// update-invoice.js - Nhận realtime đơn hàng mới và hiển thị thông báo
+// update-invoice.js - Nhận realtime đơn hàng mới và hiển thị thông báo (Render Optimized)
 
 document.addEventListener("DOMContentLoaded", () => {
 
     // ============================
-    // CÁC PHẦN TỬ GIAO DIỆN CHATBOX / POPUP / THÔNG BÁO
+    // PHẦN TỬ GIAO DIỆN
     // ============================
-    const chatbox = document.getElementById('orderChatbox');     // Icon chat / nút mở xem đơn mới
-    const badge = document.getElementById('orderBadge');         // Hiện số lượng đơn chưa đọc
-    const popup = document.getElementById('orderPopup');         // Popup hiển thị đơn ngay khi đến
-    const popupContent = document.getElementById('popupContent'); // Nội dung popup
-    const notification = document.getElementById('orderNotification'); // Thông báo đầu màn hình
-    const orderCount = document.getElementById('orderCount');    // Nội dung số lượng đơn trong thông báo
-    const viewDetail = document.getElementById('viewDetail');    // Nút xem chi tiết hóa đơn
+    const chatbox = document.getElementById('orderChatbox');
+    const badge = document.getElementById('orderBadge');
+    const popup = document.getElementById('orderPopup');
+    const popupContent = document.getElementById('popupContent');
+    const notification = document.getElementById('orderNotification');
+    const orderCount = document.getElementById('orderCount');
+    const viewDetail = document.getElementById('viewDetail');
 
     // ============================
-    // KHÔI PHỤC DANH SÁCH ĐƠN CHƯA XEM TỪ LOCALSTORAGE
+    // HÀNG ĐỢI ĐƠN CHƯA XEM (LocalStorage)
     // ============================
     let orderQueue = JSON.parse(localStorage.getItem("orderQueue") || "[]");
 
-    function updateBadge() {
-        // Hiển thị số đơn chưa xem dưới dạng badge đỏ
+    const saveQueue = () =>
+        localStorage.setItem("orderQueue", JSON.stringify(orderQueue));
+
+    const updateBadge = () => {
         if (orderQueue.length > 0) {
             badge.textContent = orderQueue.length;
             badge.style.display = "flex";
         } else {
             badge.style.display = "none";
         }
-    }
-
-    // Lưu Queue vào LocalStorage
-    function saveQueue() {
-        localStorage.setItem("orderQueue", JSON.stringify(orderQueue));
-    }
+    };
 
     updateBadge();
 
     // ============================
-    // KẾT NỐI SOCKET.IO TỚI SERVER REALTIME
+    // SOCKET.IO (Render Optimized)
     // ============================
-    const socket = io("http://localhost:3000", {
-        transports: ["polling", "websocket"] // fallback để đảm bảo kết nối luôn chạy
+
+    const socket = io("https://nodejs-53zg.onrender.com", {
+        transports: ["websocket"],        // BẮT BUỘC CHO RENDER FREE
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+        secure: true
+    });
+
+    socket.on("connect", () => {
+        console.log(">> Realtime connected:", socket.id);
+    });
+
+    socket.on("disconnect", () => {
+        console.warn(">> Mất kết nối realtime. Đang thử reconnect...");
     });
 
     // ============================
-    // SỰ KIỆN: NHẬN ĐƠN HÀNG MỚI TỪ SOCKET.IO
+    // SỰ KIỆN NHẬN ĐƠN MỚI
     // ============================
     socket.on("newOrder", (order) => {
 
-        // Thêm vào hàng đợi (mục đích để hiện badge)
-        orderQueue.push(order);
-        saveQueue();
-        updateBadge();
-        pulseBadge(); // Hiệu ứng nhịp nháy khi có đơn mới
+    // Thêm đơn vào queue
+    orderQueue.push(order);
+    saveQueue();
+    updateBadge();
+    pulseBadge();
 
-        // Lưu ID đơn vào localStorage để highlight bên trang update-invoice
-        let newInvoices = JSON.parse(localStorage.getItem("newInvoices") || "[]");
-        if (!Array.isArray(newInvoices)) newInvoices = [];
-        if (!newInvoices.includes(order.id)) {
-            newInvoices.push(order.id);
-            localStorage.setItem("newInvoices", JSON.stringify(newInvoices));
-        }
+    // Lưu ID mới để highlight ở trang update-invoice
+    const newInvoices = JSON.parse(localStorage.getItem("newInvoices") || "[]");
+    if (!newInvoices.includes(order.ID)) {
+        newInvoices.push(order.ID);
+        localStorage.setItem("newInvoices", JSON.stringify(newInvoices));
+    }
 
-        // Hiện notification nhỏ ở đầu màn hình
-        orderCount.textContent = `Bạn có ${orderQueue.length} đơn hàng mới!`;
-        showNotification();
+    // Thông báo nhỏ dạng banner
+    orderCount.textContent = `Bạn có ${orderQueue.length} đơn hàng mới!`;
+    showNotification();
 
-        // Hiển thị nội dung chi tiết của popup đơn hàng
-        popupContent.innerHTML = `
-            <p><strong>Mã đơn:</strong> ${order.id}</p>
-            <p><strong>Khách hàng:</strong> ${order.name}</p>
-            <p><strong>Điện thoại:</strong> ${order.phone}</p>
-            <p><strong>Địa chỉ:</strong> ${order.address}</p>
-            <p><strong>Ngày đặt:</strong> ${order.created}</p>
-            <p><strong>Tổng tiền:</strong> ${Number(order.total).toLocaleString()} đ</p>
-        `;
-    });
+    // ❌ KHÔNG HIỆN POPUP NỮA
+    // popup.style.display = "block";
+    // popupContent.innerHTML = "...";  // bỏ luôn
+});
+
 
     // ============================
     // HÀM XÓA TRẠNG THÁI CHƯA ĐỌC
     // ============================
-    function clearUnread() {
+    const clearUnread = () => {
         orderQueue = [];
         saveQueue();
         updateBadge();
-    }
+    };
 
     // ============================
-    // CLICK XEM CHI TIẾT — CHUYỂN TRANG update-invoice
+    // CHUYỂN TRANG UPDATE-INVOICE
     // ============================
-    viewDetail.addEventListener("click", () => {
+    const goToInvoice = () => {
         clearUnread();
         window.location.href = "index.php?n=update-invoice";
-    });
+    };
 
-    chatbox.addEventListener("click", () => {
-        clearUnread();
-        window.location.href = "index.php?n=update-invoice";
-    });
+    chatbox.addEventListener("click", goToInvoice);
+    viewDetail.addEventListener("click", goToInvoice);
 
     // ============================
     // THÔNG BÁO BUNG TỪ TRÊN XUỐNG
     // ============================
     function showNotification() {
         notification.style.display = "block";
+
+        // Reset animation để chạy lại
         notification.classList.remove("animate__bounceInDown");
-        
-        // Reset animation → bắt buộc để chạy lại animation
         void notification.offsetWidth;
-
         notification.classList.add("animate__bounceInDown");
-    }
 
-    function hideNotification() {
-        notification.style.display = "none";
+        // Auto hide
+        setTimeout(() => { notification.style.display = "none"; }, 1800);
     }
-
-    notification.addEventListener("animationend", () => {
-        setTimeout(hideNotification, 1500); // Tự tắt sau 1.5 giây
-    });
 
     // ============================
-    // HIỆU ỨNG NHỊP TIM CHO BADGE KHI CÓ ĐƠN MỚI
+    // HIỆU ỨNG NHỊP TIM CHO BADGE
     // ============================
     function pulseBadge() {
         badge.animate(
             [
                 { transform: "scale(1)" },
-                { transform: "scale(1.3)" },
+                { transform: "scale(1.25)" },
                 { transform: "scale(1)" }
             ],
-            {
-                duration: 800,
-                iterations: 1
-            }
+            { duration: 500, iterations: 1 }
         );
     }
 
     // ============================
     // ĐÓNG POPUP
     // ============================
-    window.closeOrderPopup = function () {
+    window.closeOrderPopup = () => {
         popup.style.display = "none";
     };
 });
