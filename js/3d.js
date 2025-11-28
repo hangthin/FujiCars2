@@ -5,20 +5,27 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import { gsap } from "gsap";
 
+// ==== AUTO DETECT LOCAL VS HOSTING ====
+const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+const BASE_URL = isLocal ? "" : "https://cdn.jsdelivr.net/gh/hangthin/FujiCars2/";
+
+// ==== DOM ====
 const el = document.getElementById("khung-3d");
 const nameEl = document.getElementById("ten-xe");
 const descEl = document.getElementById("mo-ta-xe");
 const nextBtn = document.getElementById("tiep-xe");
 
+// ==== LIST XE ====
 const cars = [
-  { file: "models/car1.glb", name: "1975 Porsche 911 (930) Turbo", desc: "Mẫu xe thể thao huyền thoại" },
-  { file: "models/car2.glb", name: "Ferrari F40", desc: "Biểu tượng tốc độ và hiệu năng" },
-  { file: "models/car3.obj", name: "Ford F150 Raptor", desc: "Sức mạnh vượt mọi giới hạn" }
+  { file: BASE_URL + "models/car1.glb", name: "1975 Porsche 911 (930) Turbo", desc: "Mẫu xe thể thao huyền thoại" },
+  { file: BASE_URL + "models/car2.glb", name: "Ferrari F40", desc: "Biểu tượng tốc độ và hiệu năng" },
+  { file: BASE_URL + "models/car3.obj", name: "Ford F150 Raptor", desc: "Sức mạnh vượt mọi giới hạn" }
 ];
 
 let current = 0;
 let car, nextCar;
 
+// ==== RENDERER ====
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(el.clientWidth, el.clientHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -26,13 +33,13 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 el.appendChild(renderer.domElement);
 
-// ======= CẢNH & CAMERA =======
+// ==== SCENE + CAMERA ====
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(40, el.clientWidth / el.clientHeight, 0.1, 100);
 camera.position.set(0, 1.2, 5.4);
 scene.add(camera);
 
-// ✅ NỀN GRADIENT (đen → đỏ sẫm)
+// ==== BACKGROUND GRADIENT ====
 {
   const bgCanvas = document.createElement("canvas");
   bgCanvas.width = bgCanvas.height = 32;
@@ -46,18 +53,14 @@ scene.add(camera);
   scene.background = bgTex;
 }
 
-// ======= ÁNH SÁNG SHOWROOM =======
-
-// Ánh sáng môi trường dịu
+// ==== LIGHTS ====
 scene.add(new THREE.HemisphereLight(0xffffff, 0x222222, 0.6));
 
-// Đèn chiếu chính
 const spotlight = new THREE.SpotLight(0xff3b3b, 3, 15, Math.PI / 6, 0.4, 1.5);
 spotlight.position.set(2, 8, 4);
 spotlight.castShadow = true;
 scene.add(spotlight);
 
-// Hiệu ứng đèn chiếu động (di chuyển nhẹ)
 function animateLight() {
   gsap.to(spotlight.position, {
     x: Math.sin(Date.now() * 0.0003) * 5,
@@ -71,12 +74,11 @@ function animateLight() {
 }
 animateLight();
 
-// Ánh sáng phụ tạo viền
 const rimLight = new THREE.DirectionalLight(0xffffff, 0.5);
 rimLight.position.set(-5, 3, -3);
 scene.add(rimLight);
 
-// ======= MÔI TRƯỜNG PHẢN CHIẾU =======
+// ==== ENVIRONMENT ====
 new RGBELoader().load(
   "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_03_1k.hdr",
   tex => {
@@ -85,7 +87,7 @@ new RGBELoader().load(
   }
 );
 
-// ======= SÀN CÓ PHẢN CHIẾU NHẸ =======
+// ==== FLOOR ====
 const floor = new THREE.Mesh(
   new THREE.CircleGeometry(6, 64),
   new THREE.MeshStandardMaterial({
@@ -99,7 +101,7 @@ floor.rotation.x = -Math.PI / 2;
 floor.receiveShadow = true;
 scene.add(floor);
 
-// ======= CONTROLS =======
+// ==== CONTROLS ====
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.enablePan = false;
@@ -111,10 +113,11 @@ controls.rotateSpeed = 0.6;
 controls.target.set(0, 0.6, 0);
 controls.update();
 
-// ======= LOADERS =======
+// ==== LOADERS ====
 const gltfLoader = new GLTFLoader();
 const objLoader = new OBJLoader();
 
+// ==== LOAD CAR ====
 function loadCar(index, isNext = false) {
   const carInfo = cars[index];
   const fileExt = carInfo.file.split(".").pop().toLowerCase();
@@ -130,12 +133,14 @@ function loadCar(index, isNext = false) {
       }
     });
 
+    // canh giữa
     const box = new THREE.Box3().setFromObject(obj);
     const center = box.getCenter(new THREE.Vector3());
     obj.position.sub(center);
     obj.position.y = -box.min.y;
     obj.rotation.y = Math.PI;
     obj.position.x = isNext ? 8 : 0;
+
     scene.add(obj);
 
     if (isNext) {
@@ -148,8 +153,10 @@ function loadCar(index, isNext = false) {
   });
 }
 
+// ==== TRANSITION XE ====
 function animateTransition() {
   if (!car || !nextCar) return;
+
   gsap.to(car.position, { x: -8, duration: 1.2, ease: "power2.in" });
   gsap.to(nextCar.position, { x: 0, duration: 1.2, ease: "power2.out" });
 
@@ -157,17 +164,20 @@ function animateTransition() {
     scene.remove(car);
     car = nextCar;
     nextCar = null;
+
     nameEl.textContent = cars[current].name;
     descEl.textContent = cars[current].desc;
   }, 1200);
 }
 
+// ==== BUTTON NEXT ====
 function nextCarAction() {
   current = (current + 1) % cars.length;
   loadCar(current, true);
 }
 nextBtn.addEventListener("click", nextCarAction);
 
+// ==== ANIMATION LOOP ====
 function animate() {
   requestAnimationFrame(animate);
   if (car) car.rotation.y += 0.004;
@@ -175,11 +185,13 @@ function animate() {
   renderer.render(scene, camera);
 }
 
+// ==== START ====
 loadCar(current);
 
+// ==== RESIZE ====
 window.addEventListener("resize", () => {
-  const w = el.clientWidth,
-    h = el.clientHeight;
+  const w = el.clientWidth;
+  const h = el.clientHeight;
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
   renderer.setSize(w, h);
