@@ -35,7 +35,7 @@ include "Controller/handle-admin/admin_dashboard_data.php";
 <!-- CHATBOX ICON -->
 <div id="orderChatbox">
     <i class="fa-solid fa-comment-dots chat-icon"></i>
-    <div class="badge" id="orderBadge">1</div>
+    <div class="badge" id="orderBadge"></div>
 </div>
 
 <!-- NOTIFICATION -->

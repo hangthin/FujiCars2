@@ -64,7 +64,7 @@ if (isset($_POST['them'])) {
   </div>
 </div>
 <div class="nxadmin-wrapper">
-<h2 class="nxadmin-title"><i class="fa-solid fa-cube"></i> THÊM SẢN PHẨM</h2>
+ <h1 class="nxu_header"><i class="fa-solid fa-cube"></i> THÊM SẢN PHẨM</h1>
 <form class="nxadmin-form" method="POST" enctype="multipart/form-data">
     <div class="nxadmin-row">
       <div class="nxadmin-group">
