@@ -29,7 +29,6 @@
 <script>
 <?php include "js/car_loading.js"; ?>
 </script>
-</br>
 <!-- Search & Filters -->
 <!-- 💬 Chat AI tư vấn xe -->
 <?php
@@ -47,6 +46,7 @@ if ($result) {
 ?>
 <!-- 🔹 Avatar lơ lửng -->
 <div class="chat-avatar" id="chatAvatar" title="Trò chuyện với Fuji AI"></div>
+<img src="View/img/chat1.png" width="120" style="border:2px solid red">
   <!-- Tin nhắn nổi -->
   <div class="chat-floating-msg" id="floatingMsg">Tôi có thể giúp gì cho bạn?
   </div>
@@ -76,19 +76,24 @@ if ($result) {
 </script>
 <script src="js/ai.js"></script>
 
-<!-- Banner carousel -->
-<div class="banner">
-  <div class="carousel" id="carousel">
-    <img src="View/img/bia1.avif" class="slide" alt="banner1">
-    <img src="View/img/bia2.avif" class="slide" alt="banner2" style="display:none">
-    <img src="View/img/bia3.avif" class="slide" alt="banner3" style="display:none">
-    <div class="nav prev" onclick="changeSlide(-1)">❮</div>
-    <div class="nav next" onclick="changeSlide(1)">❯</div>
+  <!-- 3D -->
+<div class="body-3d">
+  <div class="xe-huyen-thoai">
+          <h3 class="tieu-de-su-kien">
+</h3>
+      <h3 class="tieu-de-su-kien">
+  SỰ KIỆN RA MẮT & TRIỂN LÃM E-CLASS THẾ HỆ MỚI
+</h3>
+    <div id="khung-3d" class="khung-3d"></div>
   </div>
 </div>
-<script>
-<?php include "js/banner.js"; ?>
-</script>
+<!-- Gọi JS -->
+<script type="module" src="js/3d.js"></script>
+</br>
+</br>
+</br>
+</br>
+</br>
 </br>
 <?php
 include 'Controller/config/config.php'; // file kết nối CSDL
@@ -96,7 +101,7 @@ include 'Controller/config/config.php'; // file kết nối CSDL
 $loaiXe = ["Sedan","Hatchback","SUV","Đa dụng","Bán tải"];
 ?>
 <h1 class="main-title" style="text-align:left; font-size:36px; font-weight:700; margin:40px 0 30px; color:black;">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
   &nbsp;KHÁM PHÁ CÁC DÒNG XE
 </h1>
 <br>
@@ -146,7 +151,7 @@ foreach ($loaiXe as $i => $loai) {
 <!-- VIDEO QUẢNG CÁO Ô TÔ -->
 <div class="video-section">
   <div class="video-container">
-    <iframe src="https://www.youtube.com/embed/OQUtqCIoMyc"
+    <iframe src="https://www.youtube.com/embed/XhV8FQQlsKk"
       title="Quảng cáo Ô tô"
       frameborder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -155,8 +160,8 @@ foreach ($loaiXe as $i => $loai) {
   </div>
         <!-- DỊCH VỤ -->  
   <section class="mb-dich-vu">
-       <h1 class="main-title">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  &nbsp;DỊCH VỤ</h1>   
+       <h1 class="main-title">
+  &nbsp;    DỊCH VỤ</h1>   
   <div class="mb-container">
     <div class="mb-service-row">
       <!-- Cột trái -->
@@ -187,23 +192,6 @@ Diễn ra sau khi chế độ bảo hành tiêu chuẩn kết thúc, sửa chữ
   </div>
 </section>
   </br>
-  </br>
-  <!-- 3D -->
-<div class="body-3d">
-  <div class="xe-huyen-thoai">
-      <h3 class="tieu-de-su-kien">
-  SỰ KIỆN RA MẮT & TRIỂN LÃM E-CLASS THẾ HỆ MỚI
-</h3>
-    <div id="khung-3d" class="khung-3d"></div>
-    <div class="thong-tin-xe">
-      <h3 id="ten-xe">1975 Porsche 911 (930) Turbo</h3>
-      <p id="mo-ta-xe">Mẫu xe thể thao huyền thoại</p>
-      <button id="tiep-xe" class="nut-tiep">Next</button>
-    </div>
-  </div>
-</div>
-<!-- Gọi JS -->
-<script type="module" src="js/3d.js"></script>
 <!-- Font Awesome cho icon -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
 integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -262,5 +250,12 @@ integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="js/register_test-drive.js"></script>
 </br>
 </br>
+<script>
+document.querySelectorAll(".mb-btn-service").forEach(btn => {
+    btn.addEventListener("click", function () {
+        window.location.href = "?n=service";
+    });
+});
+</script>
 </body>
 </html>

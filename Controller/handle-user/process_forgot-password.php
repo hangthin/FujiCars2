@@ -1,57 +1,68 @@
 <?php
 session_start();
-include("../config/config.php");
-include("../sendmail_login.php");
+header("Content-Type: text/plain; charset=UTF-8");
 
-$phone = isset($_POST['phone']) ? trim($_POST['phone']) : '';
-$email = isset($_POST['email']) ? trim($_POST['email']) : '';
+require "../config/config.php";
+require "../sendmail_login.php";
 
-if($phone == '' || $email == '') {
-    $_SESSION['error_msg'] = 'Vui lòng nhập đầy đủ thông tin!';
-    header("Location: quenmatkhau.php");
+$phone = trim($_POST['phone'] ?? "");
+$email = trim($_POST['email'] ?? "");
+
+// ======================
+// CHỐNG SPAM (60 GIÂY)
+// ======================
+if (isset($_SESSION['last_otp_request']) && time() - $_SESSION['last_otp_request'] < 60) {
+    $wait = 60 - (time() - $_SESSION['last_otp_request']);
+    echo "Vui lòng đợi $wait giây trước khi yêu cầu lại.";
     exit;
 }
 
-$sql = "SELECT * FROM khachhang WHERE TRIM(`phone`)='$phone' AND TRIM(`email`)='$email' LIMIT 1";
-$kq = mysqli_query($conn, $sql);
-
-if(!$kq){
-    $_SESSION['error_msg'] = 'Lỗi SQL: '.mysqli_error($conn);
-    header("Location: quenmatkhau.php");
+if ($phone == "" || $email == "") {
+    echo "Vui lòng nhập đầy đủ thông tin!";
     exit;
 }
 
-if(mysqli_num_rows($kq) > 0){
-    $row = mysqli_fetch_assoc($kq);
+// ======================
+// Tìm user
+// ======================
+$sql = "SELECT * FROM khachhang 
+        WHERE TRIM(phone) = ? AND TRIM(email) = ?
+        LIMIT 1";
 
-    // Tạo OTP
-    $otp = rand(1000, 9999);
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $phone, $email);
+$stmt->execute();
+$kq = $stmt->get_result();
 
-    // Lưu thông tin vào session để dùng cho trang OTP
-    $_SESSION['email_check'] = $row['email'];
-    $_SESSION['phone_check'] = $row['phone'];
-    $_SESSION['otp'] = $otp;
-    $_SESSION['taikhoan'] = $row['TenTK'];
-    $_SESSION['user_id'] = $row['ID']; // session ID để sử dụng nếu cần
-    $_SESSION['HinhAnh'] = $row['HinhAnh'];
-    $_SESSION['Quyen'] = $row['Quyen'];
+if ($kq->num_rows == 0) {
+    echo "Không tìm thấy tài khoản phù hợp!";
+    exit;
+}
 
-    // Gửi OTP qua email
-    $send = sendOtp($row['email'], $otp);
-    if($send === true){
-        // Nếu gửi mail thành công, chuyển hướng sang trang OTP
-        header("Location: ../../View/layout_user/otp.php");
-        exit;
-    } else {
-        // Nếu gửi mail thất bại, thông báo lỗi chi tiết
-        $_SESSION['error_msg'] = 'Không thể gửi email. Lỗi: ' . $send;
-        header("Location: quenmatkhau.php");
-        exit;
-    }
+$user = $kq->fetch_assoc();
 
+// ======================
+// Tạo OTP
+// ======================
+$otp = rand(1000, 9999);
+
+// Lưu session
+$_SESSION['email_check'] = $user['email'];
+$_SESSION['phone_check'] = $user['phone'];
+$_SESSION['otp'] = $otp;
+$_SESSION['otp_time'] = time();
+
+
+// ======================
+// Gửi email
+// ======================
+$send = sendOtp($user['email'], $otp);
+
+if ($send === true) {
+    $_SESSION['last_otp_request'] = time(); // đánh dấu chống spam
+    echo "OTP_OK";
+    exit;
 } else {
-    $_SESSION['error_msg'] = "Số điện thoại hoặc email không tồn tại!";
-    header("Location: quenmatkhau.php");
+    echo "Gửi Email thất bại: " . $send;
     exit;
 }
-?>

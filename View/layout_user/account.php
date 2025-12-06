@@ -60,7 +60,7 @@ $bills = $billQuery->get_result();
 
     <!-- HÓA ĐƠN -->
     <div class="fjxacc-bills">
-        <h2>Hóa đơn</h2>
+        <h2>&nbsp;&nbsp;&nbsp;Hóa đơn</h2>
         <?php if($bills->num_rows>0): ?>
             <table class="fjxacc-table">
                 <thead>

@@ -54,7 +54,7 @@ while($row = $rsOrders->fetch_assoc()){
         "date" => $row["ngay"],
         "time" => $row["gio"],
         "address" => $row["diachi"],
-        "img" => "/../View/img/SP/" . $img,
+        "img" => "View/img/SP/" . $img,
         "status" => $status,
         "statusText" => $statusText[$status] ?? "Không rõ"
     ];

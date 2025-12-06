@@ -13,48 +13,64 @@ input[type="text"], input[type="email"] { width:100%; padding:10px; margin:8px 0
 button { width:48%; padding:10px; margin:10px 1%; border:none; border-radius:6px; cursor:pointer; font-size:16px; color:white; }
 .btn-submit { background:#e53935; } .btn-submit:hover { background:#b71c1c; } 
 .btn-close { background:#000; } .btn-close:hover { background:#333; } 
-.error { color:red; margin-top:10px; }
+#errorMsg { color:red; margin-top:10px; }
 </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Quên Mật Khẩu</h2>
+
     <form id="forgotForm">
         <label for="sdt">Số Điện Thoại</label>
         <input type="text" id="sdt" name="phone" placeholder="Nhập số điện thoại" required>
+
         <label for="email">Email</label>
         <input type="email" id="email" name="email" placeholder="Nhập Email" required>
 
         <div>
-            <button type="button" onclick="closeModal()" class="btn-close">Đóng</button>
+            <button type="button" onclick="window.location.href='index.php?n=login'" class="btn-close">Đóng</button>
             <button type="submit" class="btn-submit">Gửi Yêu Cầu</button>
         </div>
-        <div class="error" id="errorMsg"></div>
+
+        <div id="errorMsg"></div>
     </form>
 </div>
 
 <script>
-function closeModal() {
-    window.location.href = "index.php?n=login";
-}
-
 document.getElementById("forgotForm").addEventListener("submit", function(e){
     e.preventDefault();
     const formData = new FormData(this);
 
-    // Gửi dữ liệu lên server
+    const btn = document.querySelector(".btn-submit");
+    btn.disabled = true;
+    btn.innerText = "Đang gửi...";
+
     fetch("../../Controller/handle-user/process_forgot-password.php", {
         method: "POST",
         body: formData
     })
-    .finally(() => {
-        // Chuyển thẳng sang trang OTP bất kể kết quả
-        window.location.href = "otp.php";
+    .then(res => res.text())
+    .then(resp => {
+
+        console.log("SERVER:", resp);
+
+        if (resp.trim() === "OTP_OK") {
+            window.location.href = "otp.php";
+        } 
+        else {
+            document.getElementById("errorMsg").innerHTML = resp;
+            btn.disabled = false;
+            btn.innerText = "Gửi Yêu Cầu";
+        }
+    })
+    .catch(err => {
+        document.getElementById("errorMsg").innerHTML = "Không thể kết nối máy chủ.";
+        btn.disabled = false;
+        btn.innerText = "Gửi Yêu Cầu";
     });
 });
-
-
 </script>
+
 </body>
 </html>

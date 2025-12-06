@@ -98,7 +98,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 100%;
+    height: auto;
     padding: 20px;
     /* gradient trắng – đen – đỏ */
     background: linear-gradient(135deg, #ffffff 0%, #0b0b0b 50%, #ff2e2e 100%);
@@ -107,7 +107,7 @@
 .payment-card {
     width: 100%;
     max-width: 480px;
-    max-height: 90vh;
+    height: 100%;
     background: linear-gradient(135deg, #1e1e1e 0%, #0b0b0b 50%, #ff2e2e 100%);
     border-radius: 20px;
     padding: 32px 28px;
@@ -195,6 +195,12 @@ h2 {
     transform: translateY(-2px);
     box-shadow: 0 6px 25px rgba(255, 0, 0, 0.55);
 }
+
+/* Thông tin ngân hàng hiển thị chữ trắng */
+.bank-info .info-row span {
+    color: white; /* màu chữ trắng */
+}
+
  /* CUỐI THANH TOÁN ONLINE */
 
     </style>
@@ -225,5 +231,6 @@ h2 {
         </form>
     </div>
     </div>
+    
     </body>
     </html>

@@ -1,156 +1,114 @@
-// ==== JS overlay ====
-const nxuOverlay = document.getElementById('nxuOverlay');
-const nxuSpinner = document.getElementById('nxuSpinner');
-const nxuCheck = document.getElementById('nxuCheck');
-const nxuError = document.getElementById('nxuError');
-const nxuTitle = document.getElementById('nxuMsgTitle');
-const nxuText = document.getElementById('nxuMsgText');
+// DOM Elements
+const specForm = document.getElementById('specForm');
+const SanPhamID = document.getElementById('SanPhamID');
+const LoaiNhienLieu = document.getElementById('LoaiNhienLieu');
+const CongSuatHP = document.getElementById('CongSuatHP');
+const HopSo = document.getElementById('HopSo');
+const TangToc = document.getElementById('TangToc');
+const TocDoToiDa = document.getElementById('TocDoToiDa');
+const TrongLuong = document.getElementById('TrongLuong');
+const ChoNgoi = document.getElementById('ChoNgoi');
 
-function nxuShowLoadingOverlay() {
-    nxuOverlay.style.display = 'flex';
-    nxuSpinner.style.display = 'block';
-    nxuCheck.style.display = 'none';
-    nxuError.style.display = 'none';
-    nxuTitle.textContent = 'Đang xử lý...';
-    nxuText.textContent = 'Vui lòng chờ trong giây lát';
+function showMessage(text, type){
+    const box = document.getElementById('msgBox');
+    box.textContent = text;
+    box.className = 'ms882 ' + type;
+    box.style.display = 'block';
+    setTimeout(()=> box.style.display='none', 2000);
 }
 
-function nxuShowOverlayResult(success, message) {
-    nxuSpinner.style.display = 'none';
-    if(success) {
-        nxuCheck.style.display = 'block';
-        nxuError.style.display = 'none';
-        nxuCheck.classList.remove('nxu_animate-stroke');
-        void nxuCheck.offsetWidth;
-        nxuCheck.classList.add('nxu_animate-stroke');
-        nxuTitle.textContent = 'Thành công';
-    } else {
-        nxuCheck.style.display = 'none';
-        nxuError.style.display = 'block';
-        nxuError.classList.remove('nxu_animate-stroke');
-        void nxuError.offsetWidth;
-        nxuError.classList.add('nxu_animate-stroke');
-        nxuTitle.textContent = 'Thất bại';
-    }
-    nxuText.textContent = message;
-    setTimeout(() => nxuOverlay.style.display = 'none', 1500);
-}
+function selectCar(el){
+    document.querySelectorAll('.qa882').forEach(i=>i.classList.remove('active'));
+    el.classList.add('active');
+    const id = el.dataset.id;
+    if(!id) return;
 
-// ==== JS hỗ trợ edit row ====
-function editRow(data){
-    document.getElementById('id').value = data.ID;
-    document.getElementById('TenSP').value = data.TenSP;
-    document.getElementById('MoTa').value = data.MoTa;
-    document.getElementById('LoaiSP').value = data.LoaiSP;
-    document.getElementById('Gia').value = data.Gia;
-    document.getElementById('SoLuong').value = data.SoLuong;
-    document.getElementById('NhienLieu').value = data.NhienLieu;
-    document.getElementById('XuatXu').value = data.XuatXu;
-    document.getElementById('HinhAnh').value = data.HinhAnh;
-    document.getElementById('PreviewImg').src = data.HinhAnh || '';
-    document.getElementById('CongSuat').value = data.CongSuat;
-    document.getElementById('HopSo').value = data.HopSo;
-    document.getElementById('TangToc').value = data.TangToc;
-    document.getElementById('TocDoToiDa').value = data.TocDoToiDa;
-    document.getElementById('TrongLuong').value = data.TrongLuong;
-}
-
-// ==== JS preview ảnh ====
-document.getElementById('HinhAnhFile').addEventListener('change', function(e){
-    const file = e.target.files[0];
-    if(file){
-        const reader = new FileReader();
-        reader.onload = function(ev){
-            document.getElementById('PreviewImg').src = ev.target.result;
-            document.getElementById('HinhAnh').value = file.name;
-        }
-        reader.readAsDataURL(file);
-    }
-});
-
-function resetForm(){
-    document.getElementById('productForm').reset();
-    document.getElementById('PreviewImg').src = '';
-}
-
-
-
-// ==== JS tìm kiếm realtime ====
-const searchInput = document.querySelector('input[name="search"]');
-searchInput.addEventListener('input', function(){
-    const val = this.value.trim().toLowerCase();
-    document.querySelectorAll('.tableData tbody tr').forEach(tr=>{
-        const name = tr.children[1].textContent.toLowerCase();
-        const type = tr.children[3].textContent.toLowerCase();
-        if(name.includes(val) || type.includes(val)){
-            tr.style.display = '';
-        } else {
-            tr.style.display = 'none';
-        }
-    });
-});
-// ==== JS in danh sách ====
-function printTable(){
-    const table = document.querySelector('.tableData').outerHTML;
-    const style = `
-        <style>
-            body { font-family: "Segoe UI", sans-serif; color: #000; background: #fff; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid #333; padding: 8px; text-align: center; }
-            th { background: #ff2e2e; color: #fff; }
-            tr:nth-child(even) { background: #f2f2f2; }
-        </style>
-    `;
-    const win = window.open('', '', 'width=1200,height=800');
-    win.document.write('<h2 style="text-align:center;">Danh sách sản phẩm</h2>');
-    win.document.write(style + table);
-    win.document.close();
-    win.focus();
-    win.print();
-}
-
-
-
-
-
-function deleteCurrentProduct(){
-    const id = document.getElementById('id').value;
-
-    if (!id || id == "0") {
-        nxuShowOverlayResult(false, "Bạn chưa chọn sản phẩm để xóa!");
+    const specDiv = el.querySelector('.ks400');
+    if(specDiv){
+        LoaiNhienLieu.value = specDiv.querySelector('small:nth-child(1)')?.textContent.replace('Loại NL: ','') || '';
+        CongSuatHP.value = specDiv.querySelector('small:nth-child(2)')?.textContent.replace('Công suất: ','').replace(' HP','') || '';
+        HopSo.value = specDiv.querySelector('small:nth-child(3)')?.textContent.replace('Hộp số: ','') || '';
+        TangToc.value = specDiv.querySelector('small:nth-child(4)')?.textContent.replace('Tăng tốc: ','').replace(' s','') || '';
+        TocDoToiDa.value = specDiv.querySelector('small:nth-child(5)')?.textContent.replace('Tốc độ tối đa: ','').replace(' km/h','') || '';
+        TrongLuong.value = specDiv.querySelector('small:nth-child(6)')?.textContent.replace('Trọng lượng: ','').replace(' kg','') || '';
+        ChoNgoi.value = specDiv.querySelector('small:nth-child(7)')?.textContent.replace('Số chỗ: ','') || '';
+        SanPhamID.value = id;
         return;
     }
 
-    if (!confirm("Bạn chắc chắn muốn xóa sản phẩm này?")) return;
-
-    nxuShowLoadingOverlay();
-
-    fetch("", {
-        method: "POST",
-        headers: {'Content-Type':'application/x-www-form-urlencoded'},
-        body: "xoa=1&ID=" + encodeURIComponent(id)
-    })
-    .then(res => res.text())
-    .then(() => {
-        nxuShowOverlayResult(true, "Đã xóa sản phẩm!");
-
-        // Xóa hàng khỏi bảng theo ID
-        const rows = document.querySelectorAll('.tableData tbody tr');
-        rows.forEach(tr=>{
-            if(tr.children[0].textContent == id){
-                tr.remove();
-            }
-        });
-
-        resetForm();
-    })
-    .catch(err => {
-        nxuShowOverlayResult(false, "Lỗi xóa: " + err);
+    fetch('index.php?n=technical_specifications&ajax=get_spec&id=' + id)
+    .then(r=>r.json())
+    .then(d=>{
+        if(!d || !d.SanPhamID) return;
+        SanPhamID.value = d.SanPhamID || '';
+        LoaiNhienLieu.value = d.LoaiNhienLieu || '';
+        CongSuatHP.value = d.CongSuatHP || '';
+        HopSo.value = d.HopSo || '';
+        TangToc.value = d.TangToc || '';
+        TocDoToiDa.value = d.TocDoToiDa || '';
+        TrongLuong.value = d.TrongLuong || '';
+        ChoNgoi.value = d.ChoNgoi || '';
     });
 }
 
+document.getElementById('btnHuy').onclick = function(){
+    specForm.reset();
+    SanPhamID.value = '';
+    document.querySelectorAll('.qa882').forEach(i=>i.classList.remove('active'));
+}
 
+document.getElementById('btnLuu').onclick = function(){
+    if(!SanPhamID.value){
+        showMessage('Vui lòng chọn xe','error');
+        return;
+    }
 
+    const fd = new FormData(specForm);
+    const required = ['SanPhamID','LoaiNhienLieu','CongSuatHP','HopSo','TangToc','TocDoToiDa','TrongLuong','ChoNgoi'];
+    for(const f of required){
+        if(!fd.get(f).trim()){
+            showMessage('Không được để trống','error');
+            return;
+        }
+    }
 
+    fetch('index.php?n=technical_specifications&ajax=save_spec', {
+    method:'POST',
+    body: fd
+})    .then(r=>r.json())
+    .then(d=>{
+        showMessage(d.message, d.status);
+        if(d.status==='success'){
+            const activeCar = document.querySelector('.qa882.active');
+            if(!activeCar) return;
 
+            let carSpecDiv = activeCar.querySelector('.ks400');
+            const html = `
+                <small>Loại NL: ${LoaiNhienLieu.value}</small>
+                <small>Công suất: ${CongSuatHP.value} HP</small>
+                <small>Hộp số: ${HopSo.value}</small>
+                <small>Tăng tốc: ${TangToc.value} s</small>
+                <small>Tốc độ tối đa: ${TocDoToiDa.value} km/h</small>
+                <small>Trọng lượng: ${TrongLuong.value} kg</small>
+                <small>Số chỗ: ${ChoNgoi.value}</small>
+            `;
+            if(!carSpecDiv){
+                carSpecDiv = document.createElement('div');
+                carSpecDiv.className = 'ks400';
+                activeCar.appendChild(carSpecDiv);
+            }
+            carSpecDiv.innerHTML = html;
+        }
+    })
+    .catch(err=>{
+        console.error(err);
+        showMessage('Lỗi khi lưu dữ liệu','error');
+    });
+};
 
+document.getElementById('searchCar').oninput = function(){
+    const k = this.value.toLowerCase();
+    document.querySelectorAll('.qa882').forEach(i=>{
+        i.style.display = i.dataset.name.toLowerCase().includes(k) ? 'inline-block' : 'none';
+    });
+};

@@ -405,76 +405,47 @@ body{
   }
 }
 
-
-
 /* --- 3D --- */
 .tieu-de-su-kien {
   text-align: center;
+  width: 100%;
   font-size: 32px;
   font-weight: 800;
-  letter-spacing: 1.5px;
+  letter-spacing: 2.5px;
   color: #ffffff;
   text-transform: uppercase;
   background: #000; /* nền đen */
   padding: 40px 0;
-  border-top: 2px solid red;
-
-  text-shadow: 0 0 10px rgba(255, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
 }
 
-.tieu-de-su-kien:hover {
-  text-shadow: 0 0 20px rgba(255, 0, 0, 0.6), 0 0 40px rgba(255, 255, 255, 0.3);
-  letter-spacing: 2px;
-}
 
 /* --- Khối tổng 3D --- */
 .body-3d {
   display: flex;
+  width: 100%;
   justify-content: center;
   align-items: center;
-  min-height: 70vh;
+  height: 410px;
   background: #000000;
 }
 
 /* --- Thẻ xe 3D --- */
 .xe-huyen-thoai {
-  width: 1490px;
+  width: 100%;
   background: #fff;
   border-radius: 14px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   text-align: center;
+  
 }
 
 .khung-3d {
   width: 100%;
-  height: 350px;
+  height: 410px;
   background: #0a0a0a;
   overflow: hidden;
-}
-
-.thong-tin-xe {
-  background: #000;
-  color: #fff;
-  padding: 16px;
-}
-
-.nut-tiep {
-  margin-top: 12px;
-  padding: 8px 18px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #e60000, #a00000);
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-}
-
-.nut-tiep:hover {
-  background: #222;
-  transform: scale(1.05);
 }
 
   /* ===== DUOI 3D ===== */
@@ -482,7 +453,7 @@ body{
   /* ===== VIDEO QUẢNG CÁO ===== */
 .video-section {
   width: 100%;
-  max-width: 1200px;
+  max-width: 100%;
   margin: 30px auto;
   text-align: center;
   color: black;
@@ -527,61 +498,7 @@ body{
   max-width: 900px;
   margin: 0 auto;
 }
-/* ---------- Banner (carousel) ---------- */
-.banner {
-  max-width: 100%;
-  margin: 18px auto;
-  padding: 0 16px;
-  position: relative;
-}
 
-.carousel {
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-
-.carousel .slide {
-  max-width: 100%;
-  height: auto;
-  object-fit: contain; /* giữ ảnh trọn vẹn, không bị cắt */
-  display: none;       /* mặc định ẩn */
-}
-
-.carousel .slide:first-child {
-  display: block; /* ảnh đầu tiên hiển thị */
-}
-
-.carousel .nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 30px;
-  font-weight: bold;
-  color: white;
-  background: rgba(0,0,0,0.5);
-  padding: 8px 12px;
-  cursor: pointer;
-  user-select: none;
-  border-radius: 50%;
-}
-
-.carousel .prev {
-  left: 10px;
-}
-
-.carousel .next {
-  right: 10px;
-}
-
-
-.carousel {
-  position:relative; overflow:hidden; border-radius:12px; border: 2px solid rgba(255,255,255,0.06);
-}
-.carousel img{ width:100%;  display:block; height:320px; object-fit:cover; filter:brightness(0.85); }
-.carousel .nav { position:absolute; top:50%; transform:translateY(-50%); width:40px;height:40px;border-radius:50%; background:rgba(0,0,0,0.4); color:#fff; display:flex;align-items:center;justify-content:center; cursor:pointer; }
-.carousel .prev{ left:12px } .carousel .next{ right:12px }
-/* ---------- DUOI - Banner (carousel) ---------- */
 /* ==== LOAI XE HOME ===== */
 .main-title {
   text-align: left;
@@ -693,7 +610,7 @@ body{
 /* ==== DỊCH VỤ ==== */ 
 .mb-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
 .mb-dich-vu { padding:50px 20px; }
-.mb-container { max-width:1200px; margin:0 auto; }
+.mb-container { max-width:100%; margin:0 auto; }
 .mb-service-row { display:flex; flex-wrap:wrap; gap:30px; justify-content:space-between; }
 .mb-service-item { background:#fff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); flex:1 1 48%; display:flex; flex-direction:column; align-items:center; text-align:center; padding:20px; }
 .mb-service-image img { width:100%; height:auto; border-radius:8px; margin-bottom:15px; object-fit:cover; }
@@ -1321,6 +1238,7 @@ body.renameBody {
     padding: 0;
 }
 
+
 /* ===================== CONTAINER ===================== */
 .boxContainer {
     width: 90%;
@@ -1524,6 +1442,10 @@ body.renameBody {
     animation: nxu_spin .9s linear infinite; 
     display: none; 
 }
+
+
+
+
 @keyframes nxu_spin { to { transform: rotate(360deg); } }
 
 .nxu_checkmark, .nxu_errormark { width:90px; height:90px; margin:0 auto 14px; display:none; }
@@ -1545,6 +1467,7 @@ body.renameBody {
 .nxu_box p { color:#ddd; margin:0; }
 
    /* CẬP NHẬT THÔNG SỐ KĨ THUẬT */
+
 
 /* ---      TRANG QUẢN TRỊ     --- */
 :root {
@@ -3088,7 +3011,7 @@ body.fjxacc-body {
     max-width: 100%;
     height: auto;
     margin: 60px auto;
-    padding: 30px;
+    
     background: #1e1e1e;
     border-radius: 15px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.5);
@@ -3213,13 +3136,7 @@ body.fjxacc-body {
     }
 }
 /*      CUỐI TÀI KHOẢN     */
-/* ==================== MENU USER ==================== */
-.fjx-body {
-  margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background-color: #fff !important;
-  color: #111 !important;
-}
+/* ==================== MENU TOP USER ==================== */
 
 /* ===== THANH ĐIỀU HƯỚNG ===== */
 .fjx-navbar {
@@ -3233,6 +3150,7 @@ body.fjxacc-body {
   position: fixed;
   top: 0;
   width: 100%;
+  max-width: 100%;
   z-index: 999;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
@@ -3245,7 +3163,7 @@ body.fjxacc-body {
 }
 
 .fjx-left a, .fjx-right a {
-  color: #fff;
+  color: #ffffff;
   text-decoration: none;
   font-size: 16px;             /* chữ to hơn */
   letter-spacing: 0.5px;
@@ -3776,3 +3694,150 @@ h2 {
     box-shadow: 0 6px 25px rgba(255, 0, 0, 0.55);
 }
  /* CUỐI THANH TOÁN ONLINE */
+ /* THÔNG SỐ KĨ THUẬT */
+.cssAllReset{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI";}
+.cssBodyWrap{padding:24px;background:#f9f9f9;}
+
+.bx210{max-width:1400px;margin:auto;padding:20px;background:#fff;border-radius:18px;box-shadow:0 0 25px rgba(0,0,0,0.14);}
+.lm992{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+.nk551{grid-column:span 5;background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.15);padding:16px;}
+
+.vv201{overflow-x:auto;white-space:nowrap;margin-bottom:-6px;}
+.qa882{display:inline-block;width:320px;padding:12px;margin-right:12px;margin-bottom:12px;border-radius:12px;background:#f7f7f7;cursor:pointer;border-left:4px solid transparent;box-shadow:0 3px 12px rgba(0,0,0,0.1);}
+.qa882:hover{background:#ececec;}
+.qa882.active{background:#ffecec;border-left-color:#e53935;}
+.qa882 img{height:160px;object-fit:cover;border-radius:10px;width:100%;}
+.kc332{font-weight:700;font-size:16px;margin:6px 0 4px;}
+.lk093{font-size:13px;color:#666;}
+
+.ks400{font-size:14px;color:#555;margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;}
+.hr771{width:100%;padding:10px;background:#e7e7e7;border:none;border-radius:8px;margin:10px 0 12px;}
+
+.fg881{grid-column:span 4;background:#fff;border-radius:12px;padding:20px;box-shadow:0 6px 20px rgba(0,0,0,0.15);}
+.cs119{font-size:20px;color:#e53935;margin-bottom:16px;}
+
+#specForm{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;}
+.tw221{display:flex;flex-direction:column;}
+.tw221 label{font-weight:600;font-size:14px;margin-bottom:6px;color:#333;}
+.tw221 input, .tw221 select{padding:10px;border:none;border-radius:8px;background:#e0e0e0;font-size:15px;}
+
+.jq002{grid-column-start:5;}
+.mz992{background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.15);padding:20px;height:100%;display:flex;flex-direction:column;justify-content:center;gap:16px;}
+
+.qq321{padding:12px;border:none;border-radius:10px;font-weight:600;color:#fff;font-size:16px;cursor:pointer;transition:0.2s;}
+.qq321:hover{opacity:0.85;}
+.vx002{background:#e53935;}
+.gb771{background:#000;}
+
+.ms882{position:fixed;right:20px;bottom:20px;padding:12px 16px;background:#000;color:#fff;border-radius:10px;display:none;z-index:9999;}
+.ms882.success{border-left:4px solid #0096e6;}
+.ms882.error{border-left:4px solid #ff1744;}
+/* CUỐI THÔNG SỐ KĨ THUẬT */
+/* PAGE DỊCH VỤ*/
+        body.fuji-body {
+            margin: 0;
+            padding: 0;
+            background: #ffffff; /* NỀN TRẮNG */
+            font-family: Arial, sans-serif;
+            color: #000000; /* CHỮ ĐEN */
+            line-height: 1.7;
+        }
+
+        .fuji-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        h1.fuji-title, 
+        h2.fuji-section-title {
+            color: #000000; /* CHỮ ĐEN */
+            text-transform: uppercase;
+            letter-spacing: 1.3px;
+        }
+
+        h1.fuji-title {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        h2.fuji-section-title {
+            margin-top: 60px;
+            margin-bottom: 20px;
+            font-size: 26px;
+        }
+
+        p {
+            color: #000; /* đảm bảo chữ luôn đen */
+            font-size: 16px;
+        }
+
+        /* KHUNG NỘI DUNG (CARD) */
+        .fuji-card {
+            background: #f8f8f8;  /* xám nhạt nhẹ */
+            border: 1px solid #ddd;
+            padding: 25px;
+            margin-top: 30px; /* khoảng cách trên 30px */
+            border-radius: 10px;
+        }
+
+        /* NÚT XANH DƯƠNG */
+        .fuji-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 22px;
+            background: #007bff; /* XANH DƯƠNG */
+            color: #fff; /* chữ trắng */
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.25s;
+        }
+
+        .fuji-btn:hover {
+            background: #0056c7; /* xanh dương đậm */
+        }
+
+        .fuji-list {
+            margin-top: 10px;
+        }
+
+        .fuji-list p {
+            margin: 8px 0;
+        }
+
+        .fuji-divider {
+            border-bottom: 1px solid #ddd;
+            margin: 40px 0;
+        }
+
+        .fuji-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .fuji-col {
+            flex: 1 1 350px;
+        }
+
+        .fuji-hotline {
+            font-size: 32px;
+            font-weight: bold;
+            color: #000; /* đen */
+            margin-top: 20px;
+        }
+
+        .fuji-subtitle {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        @media(max-width: 768px) {
+            .fuji-flex {
+                flex-direction: column;
+            }
+        }
+        /* CUỐI PAGE DỊCH VỤ*/

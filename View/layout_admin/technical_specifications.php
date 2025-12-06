@@ -1,269 +1,324 @@
-<?php    
-include 'Controller/config/config.php';
+            <?php
+            require_once "Controller/config/config.php";
+            /* ================== XỬ LÝ AJAX ================== */
+            if(isset($_GET['ajax'])){
+                $ajax = $_GET['ajax'];
 
-// Biến hiển thị thông báo
-$message = "";
-$is_error = false; // thêm biến kiểm tra lỗi
+                // Lấy thông số theo ID sản phẩm
+                if($ajax==='get_spec'){
+                    $id = intval($_GET['id'] ?? 0);
+                    if($id<=0){ echo json_encode([]); exit; }
 
-if (isset($_POST['xoa'])) {
-    $ID = intval($_POST['ID']);
+                    $sql = "SELECT 
+                                s.ID AS SanPhamID,
+                                s.TenSP,
+                                s.HinhAnh,
+                                t.LoaiNhienLieu,
+                                t.CongSuatHP,
+                                t.HopSo,
+                                t.TangToc,
+                                t.TocDoToiDa,
+                                t.TrongLuong,
+                                t.ChoNgoi
+                            FROM sanpham s
+                            LEFT JOIN thongsokithuat t ON t.SanPhamID = s.ID
+                            WHERE s.ID = $id LIMIT 1";
 
-    mysqli_query($conn, "DELETE FROM thongsokithuat WHERE SanPhamID=$ID");
-    mysqli_query($conn, "DELETE FROM sanpham WHERE ID=$ID");
+                    $res = $conn->query($sql);
+                    $row = $res ? $res->fetch_assoc() : null;
+                    echo json_encode($row ?: []);
+                    exit;
+                }
 
-    echo "OK";
-    exit;
-}
+                // Lưu thông số
+                if($ajax==='save_spec' && $_SERVER['REQUEST_METHOD']==='POST'){
+                    $SanPhamID = intval($_POST['SanPhamID'] ?? 0);
+                    $LoaiNhienLieu = trim($_POST['LoaiNhienLieu'] ?? '');
+                    $CongSuatHP = trim($_POST['CongSuatHP'] ?? '');
+                    $HopSo = trim($_POST['HopSo'] ?? '');
+                    $TangToc = trim($_POST['TangToc'] ?? '');
+                    $TocDoToiDa = trim($_POST['TocDoToiDa'] ?? '');
+                    $TrongLuong = trim($_POST['TrongLuong'] ?? '');
+                    $ChoNgoi = trim($_POST['ChoNgoi'] ?? '');
 
+                    if(!$SanPhamID || $CongSuatHP=='' || $LoaiNhienLieu=='' || $HopSo=='' ||
+                    $TangToc=='' || $TocDoToiDa=='' || $TrongLuong=='' || $ChoNgoi==''){
+                        echo json_encode(['status'=>'error','message'=>'Không được để trống']);
+                        exit;
+                    }
 
-// --- Thêm / Sửa sản phẩm ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = intval($_POST['id'] ?? 0);
+                    // Kiểm tra tồn tại
+                    $check = $conn->prepare("SELECT ID FROM thongsokithuat WHERE SanPhamID=? LIMIT 1");
+                    $check->bind_param("i",$SanPhamID);
+                    $check->execute();
+                    $check->store_result();
+                    $hasRow = $check->num_rows>0;
+                    $check->close();
 
-    // Map cột bảng sản phẩm
-    $map = ['TenSP','MoTa','LoaiSP','Gia','SoLuong','NhienLieu','XuatXu','HinhAnh'];
+                    if($hasRow){
+                        $stmt = $conn->prepare("UPDATE thongsokithuat
+                                                SET LoaiNhienLieu=?, CongSuatHP=?, HopSo=?, TangToc=?, TocDoToiDa=?, TrongLuong=?, ChoNgoi=?
+                                                WHERE SanPhamID=?");
+                        $stmt->bind_param("ssssssii",
+                            $LoaiNhienLieu, $CongSuatHP, $HopSo, $TangToc, $TocDoToiDa, $TrongLuong, $ChoNgoi, $SanPhamID);
+                    }else{
+                        $stmt = $conn->prepare("INSERT INTO thongsokithuat
+                                                (SanPhamID, LoaiNhienLieu, CongSuatHP, HopSo, TangToc, TocDoToiDa, TrongLuong, ChoNgoi)
+                                                VALUES(?,?,?,?,?,?,?,?)");
+                        $stmt->bind_param("issssssi",
+                            $SanPhamID, $LoaiNhienLieu, $CongSuatHP, $HopSo, $TangToc, $TocDoToiDa, $TrongLuong, $ChoNgoi);
+                    }
+                    $stmt->execute();
+                    echo json_encode(['status'=>'success','message'=>'Cập nhật thành công']);
+                    exit;
+                }
 
-    if ($id > 0) {
-
-        // CẬP NHẬT SẢN PHẨM
-        $fields = [];
-        foreach($map as $col){
-            $val = $_POST[$col] ?? '';
-            $val = is_numeric($val) ? $val : "'" . mysqli_real_escape_string($conn, trim($val)) . "'";
-            $fields[] = "$col=$val";
-        }
-        $fields[] = "NgayCapNhat='".date('Y-m-d')."'";
-
-        mysqli_query($conn, "UPDATE sanpham SET " . implode(',', $fields) . " WHERE ID=$id");
-
-        // Cập nhật thông số kỹ thuật
-        $ts_map = ['CongSuat','HopSo','TangToc','TocDoToiDa','TrongLuong'];
-        $oldTS = mysqli_fetch_assoc(mysqli_query($conn,"SELECT * FROM thongsokithuat WHERE SanPhamID=$id"));
-
-        if ($oldTS) {
-            // CẬP NHẬT
-            $ts_fields = [];
-            foreach($ts_map as $col){
-                $val = "'" . mysqli_real_escape_string($conn, trim($_POST[$col] ?? '')) . "'";
-                $ts_fields[] = "$col=$val";
+                echo json_encode(['status'=>'error','message'=>'Lỗi AJAX']); 
+                exit;
             }
-            mysqli_query($conn, "UPDATE thongsokithuat SET ".implode(',', $ts_fields)." WHERE SanPhamID=$id");
-        } else {
-            // THÊM MỚI (INSERT)
-            $ts_cols = "SanPhamID";
-            $ts_vals = $id;
 
-            foreach($ts_map as $col){
-                $ts_cols .= ",$col";
-                $ts_vals .= ",'" . mysqli_real_escape_string($conn, trim($_POST[$col] ?? '')) . "'";
-            }
+            /* ================== LẤY DANH SÁCH XE ================== */
+            $cars = [];
+            $rs = $conn->query("SELECT ID, TenSP, HinhAnh FROM sanpham ORDER BY ID DESC");
+            if($rs) while($r = $rs->fetch_assoc()) $cars[] = $r;
+            ?>
+            <!doctype html>
+            <html lang="vi">
+            <head>
+            <meta charset="utf-8">
+            <title>Quản lý thông số kỹ thuật xe</title>
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <link rel="stylesheet" href="View/css/styleCss.css">
+            </head>
+            <body class="cssBodyWrap cssAllReset">
+            <div class="bx210">
+            <h1 style="text-align:center;color:#e53935;margin-bottom:20px;font-size:26px;">CẬP NHẬT THÔNG SỐ KĨ THUẬT</h1>
+            <div class="lm992">
+                <div class="nk551">
+                    <h3 class="cs119">Danh Sách Sản Phẩm</h3>
+                    <input type="text" id="searchCar" class="hr771" placeholder="Tìm xe...">
+                    <div class="vv201" id="carListArea">
+                    <?php foreach($cars as $c): 
+                        $spec = $conn->query("SELECT * FROM thongsokithuat WHERE SanPhamID=".$c['ID']." LIMIT 1")->fetch_assoc();
+                    ?>
+                    <div class="qa882" data-id="<?= $c['ID'] ?>" data-name="<?= htmlspecialchars($c['TenSP']) ?>" onclick="selectCar(this)">
+                        <img src="View/img/SP/<?= htmlspecialchars($c['HinhAnh']) ?>" alt="<?= htmlspecialchars($c['TenSP']) ?>">
+                        <div class="kc332"><?= htmlspecialchars($c['TenSP']) ?></div>
+                        <div class="lk093">ID: <?= $c['ID'] ?></div>
+                        <?php if($spec): ?>
+                        <div class="ks400">
+                            <small>Loại NL: <?= htmlspecialchars($spec['LoaiNhienLieu']) ?></small>
+                            <small>Công suất: <?= htmlspecialchars($spec['CongSuatHP']) ?> HP</small>
+                            <small>Hộp số: <?= htmlspecialchars($spec['HopSo']) ?></small>
+                            <small>Tăng tốc: <?= htmlspecialchars($spec['TangToc']) ?> s</small>
+                            <small>Tốc độ tối đa: <?= htmlspecialchars($spec['TocDoToiDa']) ?> km/h</small>
+                            <small>Trọng lượng: <?= htmlspecialchars($spec['TrongLuong']) ?> kg</small>
+                            <small>Số chỗ: <?= htmlspecialchars($spec['ChoNgoi']) ?></small>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <?php endforeach; ?>
+                    </div>
+                </div>
 
-            mysqli_query($conn, "INSERT INTO thongsokithuat($ts_cols) VALUES($ts_vals)");
-        }
+                <div class="fg881">
+                    <h3 class="cs119">Thông Số Kĩ Thuật</h3>
+                    <form id="specForm" onsubmit="return false;">
+                        <input type="hidden" id="SanPhamID" name="SanPhamID">
+                        <div class="tw221">
+                            <label>Loại nhiên liệu</label>
+                            <select id="LoaiNhienLieu" name="LoaiNhienLieu">
+                                <option value="">Chọn</option>
+                                <option value="Xăng">Xăng</option>
+                                <option value="Điện">Điện</option>
+                            </select>
+                        </div>
+                        <div class="tw221">
+                            <label>Công suất (HP)</label>
+                            <input type="number" id="CongSuatHP" name="CongSuatHP">
+                        </div>
+                        <div class="tw221">
+                            <label>Hộp số</label>
+                            <input type="text" id="HopSo" name="HopSo">
+                        </div>
+                        <div class="tw221">
+                            <label>Tăng tốc (s)</label>
+                            <input type="number" id="TangToc" name="TangToc">
+                        </div>
+                        <div class="tw221">
+                            <label>Tốc độ tối đa (km/h)</label>
+                            <input type="number" id="TocDoToiDa" name="TocDoToiDa">
+                        </div>
+                        <div class="tw221">
+                            <label>Trọng lượng (kg)</label>
+                            <input type="number" id="TrongLuong" name="TrongLuong">
+                        </div>
+                        <div class="tw221">
+                            <label>Số chỗ</label>
+                            <input type="number" id="ChoNgoi" name="ChoNgoi">
+                        </div>
+                    </form>
+                </div>
 
-        $message = "Cập nhật sản phẩm thành công!";
-    } else {
-        // THÊM MỚI SẢN PHẨM
-        $cols = "";
-        $vals = "";
+                <div class="jq002">
+                    <div class="mz992">
+                        <button class="qq321 vx002" id="btnHuy">Hủy</button>
+                        <button class="qq321 gb771" id="btnLuu">Cập nhật</button>
+                        <button id="btnPrint" class="qq321 gb771" style="margin:10px 0;">In danh sách</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div id="msgBox" class="ms882"></div>
+            <script>
+                document.getElementById('btnPrint').onclick = function () {
 
-        foreach($map as $col){
-            $cols .= "$col,";
-            $vals .= "'" . mysqli_real_escape_string($conn, trim($_POST[$col] ?? '')) . "',";
-        }
+    const activeCar = document.querySelector('.qa882.active');
 
-        $cols .= "NgayCapNhat";
-        $vals .= "'" . date('Y-m-d') . "'";
+    // ================================
+    // TRƯỜNG HỢP 1: ĐANG CHỌN XE
+    // ================================
+    if (activeCar) {
 
-        // INSERT sản phẩm
-        $sql = "INSERT INTO sanpham ($cols) VALUES ($vals)";
-        mysqli_query($conn, $sql);
+        const img = activeCar.querySelector("img").src;
+        const name = activeCar.querySelector(".kc332").textContent;
+        const id = activeCar.dataset.id;
 
-        // Lấy ID vừa thêm
-        $newID = mysqli_insert_id($conn);
+        // Lấy thông số đang hiển thị trên form
+        const spec = {
+            LoaiNhienLieu: LoaiNhienLieu.value,
+            CongSuatHP: CongSuatHP.value,
+            HopSo: HopSo.value,
+            TangToc: TangToc.value,
+            TocDoToiDa: TocDoToiDa.value,
+            TrongLuong: TrongLuong.value,
+            ChoNgoi: ChoNgoi.value
+        };
 
-        // Thêm thông số kỹ thuật
-        $ts_map = ['CongSuat','HopSo','TangToc','TocDoToiDa','TrongLuong'];
+        let html = `
+        <html>
+        <head>
+            <title>In thông số xe</title>
+            <style>
+                body { font-family: Arial; padding: 20px; }
+                img { width: 200px; height: auto; }
+                table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                td, th { border: 1px solid #ccc; padding: 8px; }
+                h2 { margin-bottom: 10px; }
+            </style>
+        </head>
+        <body>
+            <h2>Thông số kỹ thuật xe</h2>
+            <img src="${img}">
+            <h3>${name} (ID: ${id})</h3>
 
-        $ts_cols = "SanPhamID";
-        $ts_vals = $newID;
+            <table>
+                <tr><th>Loại nhiên liệu</th><td>${spec.LoaiNhienLieu}</td></tr>
+                <tr><th>Công suất (HP)</th><td>${spec.CongSuatHP}</td></tr>
+                <tr><th>Hộp số</th><td>${spec.HopSo}</td></tr>
+                <tr><th>Tăng tốc (s)</th><td>${spec.TangToc}</td></tr>
+                <tr><th>Tốc độ tối đa (km/h)</th><td>${spec.TocDoToiDa}</td></tr>
+                <tr><th>Trọng lượng (kg)</th><td>${spec.TrongLuong}</td></tr>
+                <tr><th>Số chỗ</th><td>${spec.ChoNgoi}</td></tr>
+            </table>
+        </body>
+        </html>
+        `;
 
-        foreach($ts_map as $col){
-            $ts_cols .= ",$col";
-            $ts_vals .= ",'" . mysqli_real_escape_string($conn, trim($_POST[$col] ?? '')) . "'";
-        }
-
-        mysqli_query($conn, "INSERT INTO thongsokithuat($ts_cols) VALUES($ts_vals)");
-
-        $message = "Cập nhật sản phẩm thành công!";
+        const w = window.open("", "", "width=900,height=600");
+        w.document.write(html);
+        w.document.close();
+        w.focus();
+        w.print();
+        w.close();
+        return;
     }
-}
-// --- Lấy danh sách sản phẩm ---
-$search = $_GET['search'] ?? '';
-$query = "SELECT sp.*, ts.CongSuat, ts.HopSo, ts.TangToc, ts.TocDoToiDa, ts.TrongLuong
-          FROM sanpham sp
-          LEFT JOIN thongsokithuat ts ON sp.ID = ts.SanPhamID
-          WHERE sp.TenSP LIKE '%$search%' OR sp.LoaiSP LIKE '%$search%'
-          ORDER BY sp.ID DESC";
-$result = mysqli_query($conn, $query);
-?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>Quản lý sản phẩm</title>
-<link rel="stylesheet" href="View/css/styleCss.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-</head>
-<body class="renameBody">
-<div class="boxContainer">
-    <h1 class="nxu_header"><i class="fa-solid fa-car"></i>  CẬP NHẬT THÔNG SỐ KĨ THUẬT</h2>
-   
-    <form method="POST" id="productForm" class="formProduct">
-        <input type="hidden" name="id" id="id">
-        <div class="flexRow">
-            <div class="groupItem"><label>Tên sản phẩm</label><input type="text" name="TenSP" id="TenSP"></div>
-            <div class="groupItem">
-                <label>Mô tả</label>
-                <select name="MoTa" id="MoTa">
-                    <option value="">Chọn</option>
-                    <option value="5 chỗ">5 chỗ</option>
-                    <option value="7 chỗ">7 chỗ</option>
-                </select>
-            </div>
-            <div class="groupItem">
-                <label>Loại SP</label>
-                <select name="LoaiSP" id="LoaiSP">
-                    <option value="">Chọn loại</option>
-                    <option value="Sedan">Sedan</option>
-                    <option value="Suv">Suv</option>
-                    <option value="Bán tải">Bán tải</option>
-                    <option value="Đa dụng">Đa dụng</option>
-                    <option value="Hatchback">Hatchback</option>
-                </select>
-            </div>
-            <div class="groupItem">
-                <label>Giá</label>
-                <input type="text" name="Gia" id="Gia" value="100000000">
-            </div>
-            <div class="groupItem">
-                <label>Số lượng</label>
-                <input type="number" name="SoLuong" id="SoLuong" value="1" min="1" step="1">
-            </div>
-            <div class="groupItem">
-                <label>Nhiên liệu</label>
-                <select name="NhienLieu" id="NhienLieu">
-                    <option value="">Chọn nhiên liệu</option>
-                    <option value="Xăng">Xăng</option>
-                    <option value="Điện">Điện</option>
-                </select>
-            </div>
-            <div class="groupItem">
-                <label>Xuất xứ</label>
-                <select name="XuatXu" id="XuatXu">
-                    <option value="">Chọn xuất xứ</option>
-                    <option value="Đức">Đức</option>
-                    <option value="Thái Lan">Thái Lan</option>
-                    <option value="Nhật Bản">Nhật Bản</option>
-                    <option value="Indonesia">Indonesia</option>
-                    <option value="Hàn Quốc">Hàn Quốc</option>
-                </select>
-            </div>
-            <div class="groupItem">
-                <label>Hình ảnh</label>
-                <input type="file" name="HinhAnhFile" id="HinhAnhFile" accept="image/*">
-                <input type="text" name="HinhAnh" id="HinhAnh" placeholder="Tên hoặc URL ảnh" readonly>
-                <img id="PreviewImg" style="width:120px; margin-top:5px;">
-            </div>
-            <div class="groupItem"><label>Công suất</label><input type="text" name="CongSuat" id="CongSuat"></div>
-            <div class="groupItem"><label>Hộp số</label><input type="text" name="HopSo" id="HopSo"></div>
-            <div class="groupItem"><label>Tăng tốc</label><input type="text" name="TangToc" id="TangToc"></div>
-            <div class="groupItem"><label>Tốc độ tối đa</label><input type="text" name="TocDoToiDa" id="TocDoToiDa"></div>
-            <div class="groupItem"><label>Trọng lượng</label><input type="text" name="TrongLuong" id="TrongLuong"></div>
-        </div>
-    </form>
-     <div class="controlTop">
-        <form method="GET" class="formControlTop">
-           <input type="text" name="search" placeholder="Tìm kiếm sản phẩm..." value="<?= htmlspecialchars($search) ?>">
-           <button type="button" onclick="resetForm()" class="buttonMain btnReset">
-                <i class="fa-solid fa-xmark"></i> Hủy
-           </button>
-           <button type="submit" form="productForm" class="buttonMain btnAdd"><i class="fa-solid fa-floppy-disk"></i> Lưu / Cập nhật</button>
-           <button type="button" style="color:black" class="buttonMain btnPrint" onclick="printTable()">
-            <i class="fa-solid fa-print"></i> In danh sách
-            </button>
-            <button type="button" class="buttonMain btnDeleteMain" style="background:red" onclick="deleteCurrentProduct()">
-    <i class="fa-solid fa-trash"></i> Xóa
-</button>
 
-        </form>
-    </div>
-    <table class="tableData">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Tên SP</th>
-                <th>Mô tả</th>
-                <th>Loại</th>
-                <th>Giá</th>
-                <th>Số lượng</th>
-                <th>Nhiên liệu</th>
-                <th>Xuất xứ</th>
-                <th>Thông số kỹ thuật</th>
-                <th>Ngày cập nhật</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while($row=mysqli_fetch_assoc($result)): ?>
-            <tr onclick='editRow(<?= json_encode($row) ?>)'>
-                <td><?= $row['ID'] ?></td>
-                <td><?= htmlspecialchars($row['TenSP']) ?></td>
-                <td><?= htmlspecialchars($row['MoTa']) ?></td>
-                <td><?= htmlspecialchars($row['LoaiSP']) ?></td>
-                <td><?= number_format($row['Gia'],0,',','.') ?>₫</td>
-                <td><?= htmlspecialchars($row['SoLuong']) ?></td>
-                <td><?= htmlspecialchars($row['NhienLieu']) ?></td>
-                <td><?= htmlspecialchars($row['XuatXu']) ?></td>
-                <td>
-                    <?= "Công suất: {$row['CongSuat']}<br>Hộp số: {$row['HopSo']}<br>Tăng tốc: {$row['TangToc']}<br>Tốc độ: {$row['TocDoToiDa']}<br>Trọng lượng: {$row['TrongLuong']}" ?>
-                </td>
-                <td><?= $row['NgayCapNhat'] ?></td>
+    // =======================================
+    // TRƯỜNG HỢP 2: KHÔNG CHỌN XE → IN DANH SÁCH + THÔNG SỐ
+    // =======================================
+    const visibleItems = [...document.querySelectorAll('.qa882')]
+        .filter(div => div.style.display !== 'none');
 
-            </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
-</div>
-<!-- Overlay hiệu ứng mới -->
-<div class="nxu_overlay" id="nxuOverlay">
-  <div class="nxu_box" id="nxuBox">
-    <div class="nxu_spinner" id="nxuSpinner"></div>
-    <svg class="nxu_checkmark" id="nxuCheck" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-      <circle class="nxu_checkmark__circle" cx="26" cy="26" r="25"/>
-      <path class="nxu_checkmark__check" d="M14 27l7 7 17-17"/>
-    </svg>
-    <svg class="nxu_errormark" id="nxuError" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-      <circle class="nxu_errormark__circle" cx="26" cy="26" r="25"/>
-      <path class="nxu_errormark__cross" d="M16 16 36 36 M36 16 16 36"/>
-    </svg>
-    <h2 id="nxuMsgTitle">Đang xử lý...</h2>
-    <p id="nxuMsgText">Vui lòng chờ trong giây lát</p>
-  </div>
-</div>
+    if (visibleItems.length === 0) {
+        alert("Không có xe nào để in.");
+        return;
+    }
 
-<?php if($message): ?>
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
-    nxuShowLoadingOverlay();
-    setTimeout(() => {
-        nxuShowOverlayResult(<?= $is_error ? 'false' : 'true' ?>, "<?= addslashes($message) ?>");
-    }, 800);
-});
-</script>
-<?php endif; ?>
-<script>
-<?php include "js/update_technical-specifications.js"; ?>
-</script>
-</body>
-</html>
+    let html = `
+    <html>
+    <head>
+        <title>In danh sách xe</title>
+        <style>
+            body { font-family: Arial; padding: 20px; }
+            .item { margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 15px; }
+            img { width: 140px; height: auto; float: left; margin-right: 15px; }
+            h3 { margin: 0; padding: 0; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            td, th { border: 1px solid #ccc; padding: 6px; }
+            .info { overflow: hidden; }
+        </style>
+    </head>
+    <body>
+        <h2>Danh sách xe</h2>
+    `;
+
+    visibleItems.forEach(el => {
+
+        const img = el.querySelector("img").src;
+        const name = el.querySelector(".kc332").textContent;
+        const id = el.dataset.id;
+
+        // Lấy thông số từ thẻ ks400
+        const specDiv = el.querySelector(".ks400");
+
+        const spec = specDiv ? {
+            LoaiNhienLieu: specDiv.querySelectorAll("small")[0]?.textContent.replace("Loại NL: ","") || "",
+            CongSuatHP: specDiv.querySelectorAll("small")[1]?.textContent.replace("Công suất: ","").replace(" HP","") || "",
+            HopSo: specDiv.querySelectorAll("small")[2]?.textContent.replace("Hộp số: ","") || "",
+            TangToc: specDiv.querySelectorAll("small")[3]?.textContent.replace("Tăng tốc: ","").replace(" s","") || "",
+            TocDoToiDa: specDiv.querySelectorAll("small")[4]?.textContent.replace("Tốc độ tối đa: ","").replace(" km/h","") || "",
+            TrongLuong: specDiv.querySelectorAll("small")[5]?.textContent.replace("Trọng lượng: ","").replace(" kg","") || "",
+            ChoNgoi: specDiv.querySelectorAll("small")[6]?.textContent.replace("Số chỗ: ","") || "",
+        } : null;
+
+        html += `
+            <div class="item">
+                <img src="${img}">
+                <div class="info">
+                    <h3>${name} (ID: ${id})</h3>
+
+                    ${spec ? `
+                    <table>
+                        <tr><th>Loại nhiên liệu</th><td>${spec.LoaiNhienLieu}</td></tr>
+                        <tr><th>Công suất (HP)</th><td>${spec.CongSuatHP}</td></tr>
+                        <tr><th>Hộp số</th><td>${spec.HopSo}</td></tr>
+                        <tr><th>Tăng tốc (s)</th><td>${spec.TangToc}</td></tr>
+                        <tr><th>Tốc độ tối đa (km/h)</th><td>${spec.TocDoToiDa}</td></tr>
+                        <tr><th>Trọng lượng (kg)</th><td>${spec.TrongLuong}</td></tr>
+                        <tr><th>Số chỗ</th><td>${spec.ChoNgoi}</td></tr>
+                    </table>
+                    ` : `<p style="color:gray;">Chưa có thông số kỹ thuật.</p>`}
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+        `;
+    });
+
+    html += "</body></html>";
+
+    const printWin = window.open("", "", "width=900,height=600");
+    printWin.document.write(html);
+    printWin.document.close();
+    printWin.focus();
+    printWin.print();
+    printWin.close();
+};
+
+          
+
+
+            <?php include "js/update_technical-specifications.js"; ?>
+            </script>
+            </body>
+            </html>

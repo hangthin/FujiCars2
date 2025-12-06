@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: localhost
--- Thời gian đã tạo: Th10 22, 2025 lúc 10:16 PM
+-- Thời gian đã tạo: Th12 01, 2025 lúc 09:55 AM
 -- Phiên bản máy phục vụ: 8.0.17
 -- Phiên bản PHP: 7.3.10
 
@@ -21,28 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `oto`
 --
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `cars`
---
-
-CREATE TABLE `cars` (
-  `id` int(11) NOT NULL,
-  `file` varchar(255) COLLATE utf8_vietnamese_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8_vietnamese_ci NOT NULL,
-  `description` text COLLATE utf8_vietnamese_ci
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_vietnamese_ci;
-
---
--- Đang đổ dữ liệu cho bảng `cars`
---
-
-INSERT INTO `cars` (`id`, `file`, `name`, `description`) VALUES
-(1, 'car1.glb', '1975 Porsche 911 (930) Turbo', 'Mẫu xe thể thao huyền thoại'),
-(2, 'car2.glb', 'Ferrari F40', 'Biểu tượng tốc độ và hiệu năng'),
-(3, 'car3.glb', 'Ford F150 Raptor', 'Sức mạnh vượt mọi giới hạn');
 
 -- --------------------------------------------------------
 
@@ -135,7 +113,7 @@ INSERT INTO `giohang` (`MaGioHang`, `MaKH`, `ID`, `MaSP`, `SoLuong`, `NgayCapNha
 (16, 0, 2, 10, 1, '0000-00-00 00:00:00'),
 (24, 32, 0, 10, 1, '2025-11-22 10:10:20'),
 (25, 18, 0, 10, 1, '2025-11-22 21:54:01'),
-(26, 18, 0, 2, 1, '2025-11-22 22:01:57');
+(26, 18, 0, 2, 4, '2025-11-22 22:01:57');
 
 -- --------------------------------------------------------
 
@@ -210,22 +188,139 @@ INSERT INTO `hoadon` (`ID`, `Name`, `Phone`, `Address`, `DateReceive`, `TimeRece
 (72, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-21', '03:03:27', 'Thanh toán khi nhận hàng', 1, '1220000000', '2025-11-21'),
 (73, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-21', '11:20:46', 'Chuyển khoản ngân hàng', 1, '1299000000', '2025-11-21'),
 (74, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-21', '15:56:52', 'Chuyển khoản ngân hàng', 1, '1299000000', '2025-11-21'),
-(75, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-21', '15:57:04', 'Thanh toán khi nhận hàng', 1, '1000000035', '2025-11-21'),
-(76, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '11:49:17', 'Thanh toán khi nhận hàng', 0, '1299000000', '2025-11-22'),
-(77, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '11:49:31', 'Thanh toán khi nhận hàng', 0, '1000000035', '2025-11-22'),
-(78, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '11:55:20', 'Thanh toán khi nhận hàng', 0, '600000000', '2025-11-22'),
-(79, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '11:55:34', 'Thanh toán khi nhận hàng', 0, '1299000000', '2025-11-22'),
-(80, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '12:04:29', 'Thanh toán khi nhận hàng', 0, '1299000000', '2025-11-22'),
-(81, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '12:04:42', 'Thanh toán khi nhận hàng', 0, '1000000035', '2025-11-22'),
-(82, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '12:15:47', 'Thanh toán khi nhận hàng', 0, '1299000000', '2025-11-22'),
-(83, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '12:15:58', 'Thanh toán khi nhận hàng', 0, '1299000000', '2025-11-22'),
-(84, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '12:26:18', 'Thanh toán khi nhận hàng', 0, '1299000000', '2025-11-22'),
-(85, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '12:35:12', 'Thanh toán khi nhận hàng', 0, '600000000', '2025-11-22'),
-(86, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '12:35:23', 'Thanh toán khi nhận hàng', 0, '1299000000', '2025-11-22'),
-(87, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '12:54:54', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-22'),
-(88, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '12:56:39', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-22'),
-(89, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '13:04:37', 'Thanh toán khi nhận hàng', 0, '1299000000', '2025-11-22'),
-(90, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-22', '21:53:48', 'Chuyển khoản ngân hàng', 0, '1299000000', '2025-11-22');
+(76, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '11:49:17', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-22'),
+(79, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-22', '11:55:34', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-22'),
+(91, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:06:21', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(92, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:06:53', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(93, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:15:39', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(94, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:22:43', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(95, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:22:53', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(96, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:23:02', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(97, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:23:22', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(98, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:24:17', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(99, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:24:41', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(100, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:25:02', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(101, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:32:03', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(102, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:32:49', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(103, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:32:59', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(104, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:33:17', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(105, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:33:27', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(106, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:33:39', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(107, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:36:16', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(108, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:36:28', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(109, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:39:28', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(110, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:39:39', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(111, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:39:50', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(112, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:39:59', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(113, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:40:18', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(114, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:40:54', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(115, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:47:31', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(116, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:47:45', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(117, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:48:14', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(118, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:48:32', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(119, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:50:45', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(120, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:53:58', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(121, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '17:54:10', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(122, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '18:00:25', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(123, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '18:00:45', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(124, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '18:01:31', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(125, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '18:01:47', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(126, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '18:02:09', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(127, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '18:19:12', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-25'),
+(128, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '18:21:07', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-25'),
+(129, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '18:30:52', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-25'),
+(130, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '18:33:56', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(131, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '18:34:15', 'Chuyển khoản ngân hàng', 1, '600000000', '2025-11-25'),
+(132, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '18:39:14', 'Chuyển khoản ngân hàng', 1, '600000000', '2025-11-25'),
+(133, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '18:39:26', 'Chuyển khoản ngân hàng', 1, '600000000', '2025-11-25'),
+(134, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '18:40:11', 'Chuyển khoản ngân hàng', 1, '600000000', '2025-11-25'),
+(135, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '18:40:34', 'Chuyển khoản ngân hàng', 1, '600000000', '2025-11-25'),
+(136, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '18:51:19', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(137, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '18:51:47', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(138, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '18:52:17', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(139, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '18:53:00', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(146, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:22:04', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(147, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:22:14', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(148, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:22:44', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(149, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:22:55', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(150, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:24:02', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(151, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:24:22', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(152, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:34:09', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(153, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:34:21', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(154, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:34:56', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(155, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:35:10', 'Chuyển khoản ngân hàng', 1, '600000000', '2025-11-25'),
+(156, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:35:23', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(157, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-25', '19:35:40', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-25'),
+(160, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:39:51', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(161, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:40:00', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(162, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:41:13', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(163, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:41:36', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(164, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:51:45', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(165, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:52:03', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(166, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:52:37', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(167, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:52:53', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(168, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:53:47', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(169, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:55:27', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(170, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:56:37', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(171, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '19:59:34', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-25'),
+(172, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:03:39', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(173, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:03:51', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(175, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:06:40', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(176, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:06:57', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(177, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:11:19', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(178, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:15:03', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(179, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:16:08', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(180, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:16:18', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(181, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:16:31', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(182, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:16:56', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(183, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:17:09', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(184, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:17:26', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(185, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:17:34', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(186, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:17:56', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(187, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:19:37', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(188, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:20:29', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(189, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-25', '20:22:30', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-25'),
+(190, 'admin', '0483777436', '147 le hong phong, p2, tp can tho', '2025-11-26', '07:32:57', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-26'),
+(191, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '07:34:22', 'Thanh toán khi nhận hàng', 1, '1200000000', '2025-11-26'),
+(209, 'test', '0382766381', '190 dương minh quan, p2 , tp sóc trăng', '2025-11-26', '10:23:00', 'Chuyển khoản ngân hàng', 1, '120000000', '2025-11-26'),
+(210, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '10:24:10', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-26'),
+(211, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '10:24:22', 'Chuyển khoản ngân hàng', 1, '1299000000', '2025-11-26'),
+(212, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '10:24:31', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-26'),
+(213, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '10:30:07', 'Thanh toán khi nhận hàng', 1, '1299000000', '2025-11-26'),
+(214, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '10:30:18', 'Thanh toán khi nhận hàng', 1, '600000000', '2025-11-26'),
+(215, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '13:19:54', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-26'),
+(219, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '14:23:49', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(220, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '14:24:06', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(221, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:24:47', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(222, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:26:23', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(223, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:26:43', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(224, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:27:00', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(225, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:27:22', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(226, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:28:22', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(227, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:28:53', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(228, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:29:55', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(229, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:32:03', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(230, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:33:01', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(231, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:33:29', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(232, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-26', '17:33:50', 'Chuyển khoản ngân hàng', 1, '725000000', '2025-11-26'),
+(233, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-27', '07:12:12', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-27'),
+(234, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-27', '07:13:19', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-27'),
+(235, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-27', '07:13:29', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-27'),
+(236, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:32:51', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(237, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:33:10', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(238, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:34:30', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(239, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:36:23', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(240, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:36:37', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(241, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:37:10', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(242, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:37:29', 'Thanh toán khi nhận hàng', 1, '1220000000', '2025-11-28'),
+(243, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:39:42', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(244, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:40:54', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(245, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:41:18', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(246, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:43:59', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(247, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:44:09', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(248, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-11-28', '15:44:23', 'Thanh toán khi nhận hàng', 1, '725000000', '2025-11-28'),
+(249, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-12-01', '16:43:15', 'Thanh toán khi nhận hàng', 1, '1000000035', '2025-12-01'),
+(250, 'jun', '0382766381', '387 phan đình phùng , p3 , tp cần thơ', '2025-12-01', '16:43:27', 'Thanh toán khi nhận hàng', 1, '1200000000', '2025-12-01');
 
 -- --------------------------------------------------------
 
@@ -357,8 +452,7 @@ INSERT INTO `nguoidung` (`ID`, `TenTK`, `MatKhau`, `Quyen`, `NgayCapNhat`, `DiaC
 (33, 'test', '$2y$10$vTcaUfoPsTsFzJjv/a70Hev7L922e1L5pyFgBxjxh9BFgws1H8jJy', '1', '2025-11-22 02:37:45', '111 lhp , p2 , tp can tho', '0397467234', 'fvr@gmail.com'),
 (34, 'ccede', '$2y$10$SNMujatir6AlIDDpEctcM.9q7Zl6N1vBy.7LLFxBgeoy3b1gzCiSu', '1', '2025-11-22 03:23:48', '35 lhp , p2 , tp can tho', '0485474643', '4t4@gmail.com'),
 (35, 'EWFR', '$2y$10$wFRGhZws4tuAwwMRjP/sluskPoLJdpzYLnOGUk1RyqhNfBViDRNxm', '1', '2025-11-22 20:21:21', '272 lhp , p2 , tp can tho', '0375835738', 'EY@gmail.com'),
-(36, 'FGY', '$2y$10$T5MFz1kgR2X.d/EGgVFDKOavMsHHkDIiLKaHcJJUDG1CWj7ti9yde', '1', '2025-11-22 20:22:08', '111 lhp , p2 , tp can tho', '0374888374', 'FE6@gmail.com'),
-(37, 'effrvt', '$2y$10$aXV/8BuUU4PgdbLRB57nIOYTPmlYEBhcr4vww9/JPzXbJ31tL8006', '1', '2025-11-22 20:27:40', '92 lhp , p2 , tp can tho', '0573666472', '43578@gmail.com');
+(36, 'FGY', '$2y$10$T5MFz1kgR2X.d/EGgVFDKOavMsHHkDIiLKaHcJJUDG1CWj7ti9yde', '1', '2025-11-22 20:22:08', '111 lhp , p2 , tp can tho', '0374888374', 'FE6@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -384,14 +478,14 @@ CREATE TABLE `sanpham` (
 --
 
 INSERT INTO `sanpham` (`ID`, `TenSP`, `MoTa`, `NgayCapNhat`, `HinhAnh`, `LoaiSP`, `Gia`, `SoLuong`, `NhienLieu`, `XuatXu`) VALUES
-(2, 'COROLLA ALTIS 1.8G', '5 chỗ', '2025-09-23', 'hinh2.jpg', 'Sedan', 725000000, '20', 'Xăng', 'Thái Lan'),
+(2, 'COROLLA ALTIS 1.8G', '5 chỗ', '2025-09-23', 'hinh2.jpg', 'Sedan', 725000000, '24', 'Xăng', 'Thái Lan'),
 (3, 'CAMRY 2.0Q', '5 chỗ', '2025-09-23', 'h3.jpg', 'Sedan', 1220000000, '30', 'Xăng', 'Thái Lan'),
 (4, 'YARIS CROSS', '5 chỗ', '2025-09-25', 'hinh4.jpg', 'Suv', 650000000, '30', 'Xăng', 'Indonesia'),
 (5, 'HILUX 2.4L 4X4 MT', '5 chỗ', '2025-10-07', 'h5.avif', 'Bán tải', 600000000, '25', 'Xăng', 'Thái Lan'),
 (7, 'VELOZ CROSS CVT', '7 chỗ', '2025-10-08', 'h7.png', 'Đa dụng', 638000000, '33', 'Xăng', 'Indonesia'),
 (8, 'WIGO G', '5 chỗ', '2025-11-04', 'wigo.png', 'Hatchback', 405000000, '40', 'Xăng', 'Indonesia'),
 (9, 'LAND CRUISER PRADO M', '7 chỗ', '2025-10-31', 'h7.jpg', 'Đa dụng', 3480000000, '10', 'Xăng', 'Nhật Bản'),
-(10, 'RANGER RAPTOR', '5 chỗ', '2025-10-31', 'h8.jpg', 'Bán tải', 1299000000, '17', 'Xăng', 'Thái Lan'),
+(10, 'RANGER RAPTOR', '5 chỗ', '2025-10-31', 'h8.jpg', 'Bán tải', 1299000000, '20', 'Xăng', 'Thái Lan'),
 (11, 'Ford Ranger Raptor X', '5 chỗ', '2025-10-31', '8.jpg', 'Bán tải', 1000000035, '9', 'Xăng', 'Thái Lan'),
 (12, 'EQS SUV', '5 chỗ', '2025-10-09', 'h8.png', 'Suv', 4999000000, '10', 'Xăng', 'Đức'),
 (13, 'Mercedes-AMG G-Class', '5 chỗ', '2025-11-07', 'h1.avif', 'Bán tải', 11750000000, '20', 'Xăng', 'Đức'),
@@ -407,8 +501,10 @@ INSERT INTO `sanpham` (`ID`, `TenSP`, `MoTa`, `NgayCapNhat`, `HinhAnh`, `LoaiSP`
 (108, 'BMW X5', '5 chỗ', '2025-11-10', 'x5.png', 'Suv', 5200000000, '2', 'Xăng', 'Đức'),
 (109, 'SUZUKI SWIFT', '5 chỗ', '2025-11-11', 'szk.jpg', 'Hatchback', 450000000, '20', 'Xăng', 'Nhật Bản'),
 (110, 'TOYOTA YARIS', '5 chỗ', '2025-11-11', 'sp2.png', 'Hatchback', 420000000, '15', 'Xăng', 'Thái Lan'),
-(111, 'HONDA JAZZ', '5 chỗ', '2025-11-11', 'sp1.png', 'Hatchback', 480000000, '18', 'Xăng', 'Nhật Bản'),
-(113, 'HYUNDAI I20', '5 chỗ', '2025-11-13', 't1.png', 'Hatchback', 410000000, '14', 'Xăng', 'Hàn Quốc');
+(111, 'HONDA JAZZ1', '5 chỗ', '2025-11-30', 'sp1.png', 'Hatchback', 480000000, '18', 'Xăng', 'Nhật Bản'),
+(113, 'test', '5 chỗ', '2025-11-30', 'xerua.jpg', 'Bán tải', 100000000, '1', 'Điện', 'Đức'),
+(150, 'test2', '5 chỗ', '2025-11-30', 'chat.avif', 'Bán tải', 100000000, '1', 'Điện', 'Đức'),
+(152, 'test4', '5 chỗ', '2025-11-30', 'chat.webp', 'Bán tải', 100000000, '1', 'Điện', 'Đức');
 
 -- --------------------------------------------------------
 
@@ -416,49 +512,49 @@ INSERT INTO `sanpham` (`ID`, `TenSP`, `MoTa`, `NgayCapNhat`, `HinhAnh`, `LoaiSP`
 -- Cấu trúc bảng cho bảng `thongsokithuat`
 --
 
-CREATE TABLE `thongsokithuat` (
+CREATE TABLE `sanpham` (
   `ID` bigint(20) NOT NULL,
-  `SanPhamID` bigint(20) NOT NULL,
-  `LoaiNhienLieu` varchar(50) COLLATE utf8_vietnamese_ci DEFAULT NULL,
-  `CongSuat` varchar(50) COLLATE utf8_vietnamese_ci DEFAULT NULL,
-  `HopSo` varchar(100) COLLATE utf8_vietnamese_ci DEFAULT NULL,
-  `TangToc` varchar(50) COLLATE utf8_vietnamese_ci DEFAULT NULL,
-  `TocDoToiDa` varchar(50) COLLATE utf8_vietnamese_ci DEFAULT NULL,
-  `TrongLuong` varchar(50) COLLATE utf8_vietnamese_ci DEFAULT NULL,
-  `ChoNgoi` int(11) DEFAULT NULL
+  `TenSP` varchar(30) CHARACTER SET utf8 COLLATE utf8_vietnamese_ci NOT NULL,
+  `MoTa` varchar(255) CHARACTER SET utf8 COLLATE utf8_vietnamese_ci NOT NULL,
+  `NgayCapNhat` date NOT NULL,
+  `HinhAnh` varchar(100) CHARACTER SET utf8 COLLATE utf8_vietnamese_ci NOT NULL,
+  `LoaiSP` varchar(255) CHARACTER SET utf8 COLLATE utf8_vietnamese_ci NOT NULL,
+  `Gia` bigint(255) NOT NULL,
+  `SoLuong` varchar(255) CHARACTER SET utf8 COLLATE utf8_vietnamese_ci NOT NULL,
+  `NhienLieu` varchar(50) COLLATE utf8_vietnamese_ci DEFAULT NULL,
+  `XuatXu` varchar(100) COLLATE utf8_vietnamese_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_vietnamese_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `thongsokithuat`
 --
 
-INSERT INTO `thongsokithuat` (`ID`, `SanPhamID`, `LoaiNhienLieu`, `CongSuat`, `HopSo`, `TangToc`, `TocDoToiDa`, `TrongLuong`, `ChoNgoi`) VALUES
-(13, 2, 'Xăng', '140 mã lực (104 kW)', 'Tự động CVT', '0-100 km/h 10,2s', '180 km/h', '1.270 kg', 5),
-(14, 3, 'Xăng', '165 mã lực (123 kW)', 'Tự động 6 cấp', '0-100 km/h 9,2s', '210 km/h', '1.525 kg', 5),
-(15, 4, 'Xăng', '120 mã lực (89 kW)', 'Tự động CVT', '0-100 km/h 11,5s', '170 km/h', '1.210 kg', 5),
-(16, 5, 'Xăng', '150 mã lực (110 kW)', 'Số sàn 6 cấp', '0-100 km/h 11,0s', '175 km/h', '2.085 kg', 5),
-(18, 7, 'Xăng', '104 mã lực (77 kW)', 'Tự động CVT', '0-100 km/h 12,5s', '170 km/h', '1.270 kg', 7),
-(19, 8, 'Xăng', '65 mã lực (48 kW)', 'Số sàn 5 cấp', '0-100 km/h 15,0s', '150 km/h', '940 kg', 5),
-(23, 12, 'Xăng', '585 mã lực (430 kW)', 'Tự động 9 cấp AMG', '0–100 km/h 4,5s', '240 km/h', 'Khoảng 2.560 kg', 5),
-(35, 9, 'Xăng', '275 mã lực (205 kW)', 'Tự động 8 cấp', '0-100 km/h 8,5s', '180 km/h', '2.710-2.760 kg', 7),
-(36, 10, 'Xăng', '207 hp (154 kW)', '10-cấp tự động', 'Khoảng <6 giây', 'khoảng 200+ km/h', 'Khoảng ~2.423 kg', 5),
-(37, 11, 'Xăng', '210 mã lực (154 kW)', 'Tự động 10 cấp', 'Khoảng 10,5 giây', 'Khoảng 180 km/h', 'Khoảng 2.342 kg', 5),
-(98, 13, NULL, '255 hp @ 5.800 rpm', '9G-TRONIC 9-speed automatic', '(0-100 km/h) 6,2 giây', 'Khoảng 180 km/h', '2.710-2.760 kg', NULL),
-(135, 99, 'Xăng', '135 mã lực (100 kW)', 'Tự động 5 cấp', '0-100 km/h 11,0s', '170 km/h', '1.400 kg', 7),
-(146, 99, 'Xăng', '140 mã lực (104 kW)', 'Tự động CVT', '0-100 km/h 10,0s', '180 km/h', '1.400 kg', 5),
-(147, 100, 'Xăng', '184 mã lực (137 kW)', 'Tự động 5 cấp', '0-100 km/h 9,2s', '200 km/h', '1.550 kg', 5),
-(148, 101, 'Xăng', '120 mã lực (89 kW)', 'Số sàn 5 cấp', '0-100 km/h 11,5s', '170 km/h', '1.350 kg', 7),
-(149, 102, 'Xăng', '210 mã lực (155 kW)', 'Tự động 6 cấp', '0-100 km/h 8,5s', '210 km/h', '2.200 kg', 5),
-(150, 103, 'Xăng', '190 mã lực (140 kW)', 'Tự động 6 cấp', '0-100 km/h 8,8s', '205 km/h', '2.300 kg', 5),
-(151, 104, 'Xăng', '200 mã lực (147 kW)', 'Tự động 8 cấp', '0-100 km/h 8,0s', '210 km/h', '1.800 kg', 5),
-(152, 105, 'Xăng', '156 mã lực (115 kW)', 'Tự động CVT', '0-100 km/h 10,5s', '190 km/h', '1.400 kg', 5),
-(153, 106, 'Xăng', '296 mã lực (220 kW)', 'Tự động 8 cấp', '0-100 km/h 7,5s', '240 km/h', '2.500 kg', 7),
-(154, 107, 'Xăng', '333 mã lực (245 kW)', 'Tự động 9 cấp', '0-100 km/h 7,2s', '250 km/h', '2.400 kg', 5),
-(155, 108, 'Xăng', '450 mã lực (330 kW)', 'Tự động 9 cấp', '0-100 km/h 5,8s', '280 km/h', '2.600 kg', 5),
-(156, 109, 'Xăng', '90 mã lực (67 kW)', 'Tự động CVT', '0-100 km/h 12,0s', '170 km/h', '1.050 kg', 5),
-(157, 110, 'Xăng', '95 mã lực (70 kW)', 'Tự động 6 cấp', '0-100 km/h 11,5s', '175 km/h', '1.080 kg', 5),
-(158, 111, 'Xăng', '100 mã lực (74 kW)', 'Tự động CVT', '0-100 km/h 11,0s', '180 km/h', '1.100 kg', 5),
-(160, 113, 'Xăng', '98 mã lực (72 kW)', 'Tự động CVT', '0-100 km/h 11,8s', '178 km/h', '1.090 kg', 5);
+INSERT INTO `thongsokithuat` (`ID`, `SanPhamID`, `LoaiNhienLieu`, `CongSuatHP`, `HopSo`, `TangToc`, `TocDoToiDa`, `TrongLuong`, `ChoNgoi`) VALUES
+(1, 2, 'Xăng', 138, 'CVT', 10.2, 195, 1320, 5),
+(2, 3, 'Xăng', 170, 'Tự động 6 cấp', 9.2, 210, 1470, 5),
+(3, 4, 'Xăng', 106, 'CVT', 11.7, 175, 1250, 5),
+(4, 5, 'Xăng', 147, 'Số sàn 6 cấp', 12.8, 170, 2040, 5),
+(5, 7, 'Xăng', 105, 'CVT', 12, 175, 1290, 7),
+(6, 8, 'Xăng', 67, 'Tự động 4 cấp', 14.8, 150, 865, 5),
+(7, 9, 'Xăng', 278, 'Tự động 6 cấp', 8.1, 210, 2300, 7),
+(8, 10, 'Xăng', 210, 'Tự động 10 cấp', 7.5, 200, 2500, 5),
+(9, 11, 'Xăng', 210, 'Tự động 10 cấp', 7.8, 200, 2450, 5),
+(10, 12, 'Điện', 355, '1 cấp', 6, 210, 2800, 5),
+(11, 13, 'Xăng', 577, 'Tự động 9 cấp', 4.5, 240, 2560, 5),
+(12, 99, 'Xăng', 138, 'CVT', 10.5, 190, 1325, 5),
+(13, 100, 'Xăng', 188, 'CVT', 9.1, 195, 1500, 5),
+(14, 101, 'Xăng', 104, 'Tự động 4 cấp', 12.5, 165, 1290, 7),
+(15, 102, 'Xăng', 160, 'Số sàn 6 cấp', 12, 175, 2030, 5),
+(16, 103, 'Xăng', 190, 'Tự động 7 cấp', 10.8, 180, 2050, 5),
+(17, 104, 'Xăng', 180, 'Tự động 8 cấp', 10, 195, 1690, 5),
+(18, 105, 'Xăng', 147, 'Tự động 6 cấp', 10.3, 190, 1320, 5),
+(19, 106, 'Xăng', 276, 'Tự động 8 cấp', 7, 200, 2100, 7),
+(20, 107, 'Xăng', 381, 'Tự động 9 cấp', 5.5, 250, 2180, 5),
+(21, 108, 'Xăng', 375, 'Tự động 8 cấp', 5.3, 243, 2140, 5),
+(22, 109, 'Xăng', 82, 'Tự động CVT', 13, 160, 915, 5),
+(23, 110, 'Xăng', 106, 'CVT', 12.8, 165, 1040, 5),
+(24, 111, 'Xăng', 118, 'CVT', 12, 175, 1120, 5),
+(25, 113, 'Xăng', 100, 'AT', 12.5, 180, 1200, 5);
 
 -- --------------------------------------------------------
 
@@ -558,19 +654,11 @@ INSERT INTO `vanchuyen` (`ID`, `TenTK`, `ID_HoaDon`, `Phone`, `Address`, `TrangT
 (21, 'jun', 6, '0382766381', '190 dương minh quan, p2 , tp sóc trăng', 'Đã giao hàng'),
 (22, 'admin', 64, '0483777436', '147 le hong phong, p2, tp can tho', 'Đã lấy hàng'),
 (23, 'jun', 72, '0382766381', '387 phan đình phùng , p3 , tp cần thơ', 'Đã lấy hàng'),
-(24, 'jun', 73, '0382766381', '387 phan đình phùng , p3 , tp cần thơ', 'Đang giao hàng'),
-(25, 'jun', 75, '0382766381', '387 phan đình phùng , p3 , tp cần thơ', 'Đang vận chuyển'),
-(26, 'admin', 88, '0483777436', '147 le hong phong, p2, tp can tho', 'Đang lấy hàng');
+(24, 'jun', 73, '0382766381', '387 phan đình phùng , p3 , tp cần thơ', 'Đang giao hàng');
 
 --
 -- Chỉ mục cho các bảng đã đổ
 --
-
---
--- Chỉ mục cho bảng `cars`
---
-ALTER TABLE `cars`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `chitiethoadon`
@@ -653,12 +741,6 @@ ALTER TABLE `vanchuyen`
 --
 
 --
--- AUTO_INCREMENT cho bảng `cars`
---
-ALTER TABLE `cars`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
 -- AUTO_INCREMENT cho bảng `chitiethoadon`
 --
 ALTER TABLE `chitiethoadon`
@@ -674,13 +756,13 @@ ALTER TABLE `dangkilaithe`
 -- AUTO_INCREMENT cho bảng `giohang`
 --
 ALTER TABLE `giohang`
-  MODIFY `MaGioHang` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `MaGioHang` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT cho bảng `hoadon`
 --
 ALTER TABLE `hoadon`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=251;
 
 --
 -- AUTO_INCREMENT cho bảng `khachhang`
@@ -710,13 +792,13 @@ ALTER TABLE `nguoidung`
 -- AUTO_INCREMENT cho bảng `sanpham`
 --
 ALTER TABLE `sanpham`
-  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
+  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 
 --
 -- AUTO_INCREMENT cho bảng `thongsokithuat`
 --
 ALTER TABLE `thongsokithuat`
-  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=173;
+  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT cho bảng `trangthai_laythu`

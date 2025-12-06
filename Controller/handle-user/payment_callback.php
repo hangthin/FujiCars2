@@ -1,46 +1,45 @@
 <?php
-// Bắt đầu phiên làm việc của PHP
 session_start();
-
-// Kết nối tới cơ sở dữ liệu
 include "../../Controller/config/config.php";
-
-// Thiết lập múi giờ hệ thống
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-// ===== Kiểm tra giao dịch hợp lệ =====
-// Nếu không tồn tại session 'bank_txn', dừng trang và thông báo lỗi
+// ===============================
+// KIỂM TRA GIAO DỊCH HỢP LỆ
+// ===============================
 if (!isset($_SESSION['bank_txn'])) {
     die("❌ Không tìm thấy giao dịch. Vui lòng thử lại!");
 }
 
-// Lấy dữ liệu giỏ hàng và tổng tiền từ session
-$txn = $_SESSION['bank_txn'];
-$cartItems = $txn['cartItems']; // mảng các sản phẩm trong giỏ
-$total = $txn['total'];         // tổng tiền hóa đơn
+$txn        = $_SESSION['bank_txn'];
+$cartItems  = $txn['cartItems'];
+$total      = $txn['total'];
 
-// ===== Lấy thông tin người dùng từ SESSION =====
-$name    = $_SESSION['TenTK']    ?? "Khách hàng";
-$phone   = $_SESSION['phone']    ?? "Chưa có";
-$address = $_SESSION['DiaChi']   ?? "Chưa có";
-$method  = "Chuyển khoản ngân hàng"; // Phương thức thanh toán
+// ===============================
+// LẤY THÔNG TIN USER
+// ===============================
+$name    = $_SESSION['TenTK']  ?? "Khách hàng";
+$phone   = $_SESSION['phone']  ?? "Chưa có";
+$address = $_SESSION['DiaChi'] ?? "Chưa có";
+$method  = "Chuyển khoản ngân hàng";
 
-// ===== Thời gian hệ thống =====
-$DateCreate  = date('Y-m-d'); // Ngày tạo hóa đơn
-$DateReceive = date('Y-m-d'); // Ngày nhận
-$TimeReceive = date('H:i:s'); // Giờ nhận
-$Status      = 0;             // Trạng thái hóa đơn (0 = chờ xử lý)
+// ===============================
+// THỜI GIAN
+// ===============================
+$DateCreate  = date('Y-m-d');
+$DateReceive = date('Y-m-d');
+$TimeReceive = date('H:i:s');
+$Status      = 0;
 
-// ===== GHI HÓA ĐƠN =====
+// ===============================
+// INSERT HÓA ĐƠN
+// ===============================
 $sqlHoadon = "INSERT INTO hoadon 
-    (Name, Phone, Address, DateReceive, TimeReceive, Method, Status, TotalPrice, DateCreate)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+(Name, Phone, Address, DateReceive, TimeReceive, Method, Status, TotalPrice, DateCreate)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-// Chuẩn bị câu truy vấn để chống SQL Injection
 $stmt = $conn->prepare($sqlHoadon);
 if (!$stmt) die("Prepare hoadon lỗi: " . $conn->error);
 
-// Gắn giá trị vào câu truy vấn
 $stmt->bind_param(
     "ssssssids",
     $name,
@@ -54,18 +53,15 @@ $stmt->bind_param(
     $DateCreate
 );
 
-// Thực thi câu truy vấn
-if (!$stmt->execute()) {
-    die("Execute hoadon lỗi: " . $stmt->error);
-}
-
-// ===== Lấy ID tự động của hóa đơn mới =====
-$bill_id = $conn->insert_id;
+if (!$stmt->execute()) die("Execute hoadon lỗi: " . $stmt->error);
+$bill_id = $stmt->insert_id;
 $stmt->close();
 
 // ===============================
-// 🔥 REALTIME: Gửi dữ liệu sang Node server (POST JSON)
+// 🔥 REALTIME TRIGGER → NODE SERVER (Render)
 // ===============================
+include "../handle-admin/order_trigger.php";
+
 $orderData = [
     "id"      => $bill_id,
     "name"    => $name,
@@ -75,52 +71,37 @@ $orderData = [
     "created" => date('Y-m-d H:i:s')
 ];
 
-// Chuyển dữ liệu sang JSON
-$payload = json_encode($orderData);
+emitNewOrder($orderData);
 
-// Thiết lập context POST JSON
-$opts = [
-    "http" => [
-        "method"  => "POST",
-        "header"  => "Content-Type: application/json\r\n",
-        "content" => $payload,
-        "timeout" => 3
-    ]
-];
-
-$context = stream_context_create($opts);
-// Gửi dữ liệu đến Node.js server (localhost:3000)
-@file_get_contents("http://localhost:3000/emit-order", false, $context);
 // ===============================
-
-// ==================================
-// 🔥 REALTIME bằng PHP (Dashboard)
-// ==================================
-// Dùng session để dashboard biết có đơn mới
+// ĐÁNH DẤU DASHBOARD CHƯA XEM ĐƠN MỚI
+// ===============================
 $_SESSION['lastViewedOrder'] = 0;
 
-// ===== GHI CHI TIẾT HÓA ĐƠN =====
+// ===============================
+// LƯU CHI TIẾT ĐƠN HÀNG
+// ===============================
 foreach ($cartItems as $item) {
-    $productId   = strval($item['ID'] ?? '');         // Mã sản phẩm
-    $productName = $item['TenSP'] ?? '';             // Tên sản phẩm
-    $qty         = intval($item['SoLuong'] ?? 0);    // Số lượng
-    $price       = floatval($item['Gia'] ?? $item['GiaTien'] ?? 0); // Giá
+    $productId   = strval($item['ID'] ?? '');
+    $productName = $item['TenSP'] ?? '';
+    $qty         = intval($item['SoLuong'] ?? 0);
+    $price       = floatval($item['Gia'] ?? $item['GiaTien'] ?? 0);
 
-    // Câu truy vấn insert chi tiết hóa đơn
     $sqlDetail = "INSERT INTO hoadon_detail 
-        (BillID, ProductID, ProductName, Quantity, Price)
-        VALUES (?, ?, ?, ?, ?)";
+    (BillID, ProductID, ProductName, Quantity, Price)
+    VALUES (?, ?, ?, ?, ?)";
 
     $stmtDetail = $conn->prepare($sqlDetail);
     if ($stmtDetail) {
-        // Gắn giá trị và thực thi
         $stmtDetail->bind_param("sssii", $bill_id, $productId, $productName, $qty, $price);
         $stmtDetail->execute();
         $stmtDetail->close();
     }
 }
 
-// ===== Xóa session giao dịch =====
+// ===============================
+// XÓA SESSION BANKING
+// ===============================
 unset($_SESSION['bank_txn']);
 ?>
 <!DOCTYPE html>
@@ -128,115 +109,86 @@ unset($_SESSION['bank_txn']);
 <head>
 <meta charset="UTF-8">
 <title>Đặt hàng thành công</title>
-<style>
-/* ===== CSS Trang Đặt Hàng Thành Công ===== */
 
-/* Body của trang */
+<style>
 body {
     font-family: "Segoe UI", sans-serif;
-    background-color: #0b0b0b; /* nền đen */
+    background-color: #0b0b0b;
     padding: 40px;
     text-align: center;
     color: #fff;
     margin: 0;
 }
-
-/* Hộp chính */
 .box {
-    background-color: #1a1a1a; /* hộp đen nhạt */
+    background-color: #1a1a1a;
     border-radius: 20px;
     padding: 40px 30px;
     max-width: 600px;
     margin: auto;
     box-shadow: 0 8px 30px rgba(255, 0, 0, 0.4);
-    border: 2px solid #ff2e2e; /* viền đỏ */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid #ff2e2e;
+    transition: 0.3s ease;
 }
-
 .box:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 40px rgba(255, 0, 0, 0.6);
 }
-
-/* Tiêu đề */
 h2 {
-    color: #ff2e2e; /* đỏ nổi bật */
+    color: #ff2e2e;
     font-size: 28px;
     margin-bottom: 20px;
     text-shadow: 0 0 8px #ff2e2e;
 }
-
-/* Thông tin tổng quan */
 .box p {
     font-size: 16px;
     margin: 8px 0;
 }
-
-/* Hộp thông tin chi tiết giao hàng */
 .info-box {
     text-align: left;
-    background-color: #2a2a2a; /* hộp xám đen */
-    border: 2px solid #ff2e2e; /* viền đỏ */
+    background-color: #2a2a2a;
+    border: 2px solid #ff2e2e;
     border-radius: 12px;
     padding: 20px 25px;
     margin-top: 25px;
     box-shadow: 0 4px 15px rgba(255, 0, 0, 0.25);
 }
-
 .info-box h3 {
     margin-top: 0;
     color: #ff2e2e;
     text-align: center;
     font-size: 20px;
-    text-shadow: 0 0 5px #ff2e2e;
 }
-
-.info-box p {
-    margin: 6px 0;
-    font-size: 15px;
-}
-
-/* Nút quay về trang chủ */
 .btn-home {
     display: inline-block;
     margin-top: 30px;
-    background-color: #ff2e2e; /* đỏ */
+    background-color: #ff2e2e;
     color: #fff;
     padding: 14px 28px;
     border-radius: 50px;
     text-decoration: none;
     font-weight: 600;
     font-size: 16px;
-    transition: all 0.3s ease;
+    transition: 0.3s ease;
     box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
 }
-
 .btn-home:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(255, 0, 0, 0.6);
-    background-color: #d10000; /* đỏ đậm khi hover */
+    background-color: #d10000;
 }
-
-/* Responsive: giảm padding trên thiết bị nhỏ */
-@media (max-width: 768px) {
-    body { padding: 20px; }
-    .box { padding: 30px 20px; }
-    .btn-home { width: 100%; padding: 14px 0; }
-}
-
 </style>
 </head>
 <body>
-</br>
-</br>
-</br>
+
+<br><br><br>
+
 <div class="box">
     <h2>Đặt hàng thành công!</h2>
     <p><b>Mã hóa đơn:</b> <?= $bill_id ?></p>
     <p><b>Tổng tiền:</b> <?= number_format($total, 0, ',', '.') ?> VND</p>
 
     <div class="info-box">
-        <h3 style="margin-top:0;color:#d10000;text-align:center;">Xác nhận thông tin giao hàng</h3>
+        <h3>Xác nhận thông tin giao hàng</h3>
         <p><b>Họ và tên:</b> <?= htmlspecialchars($name) ?></p>
         <p><b>Số điện thoại:</b> <?= htmlspecialchars($phone) ?></p>
         <p><b>Địa chỉ:</b> <?= htmlspecialchars($address) ?></p>

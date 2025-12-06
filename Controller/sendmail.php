@@ -26,7 +26,7 @@ function sendMail($toEmail, $toName, $subject, $body)
         $mail->Host = 'smtp.gmail.com';           // Gmail SMTP server
         $mail->SMTPAuth = true;
         $mail->Username = 'nhthin366@gmail.com';   // 🔹 Thay bằng Gmail thật
-        $mail->Password = 'zhfk ynjf bhue xucf';    // 🔹 Dán App Password (16 ký tự)
+        $mail->Password = 'qerw ouap mnmt kfrj';    // 🔹 Dán App Password (16 ký tự)
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // SSL/TLS
         $mail->Port = 465;                        // SSL port (nếu dùng TLS thì 587)
 

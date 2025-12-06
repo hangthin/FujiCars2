@@ -24,7 +24,6 @@ const BASE_URL = isLocal
 const el = document.getElementById("khung-3d");
 const nameEl = document.getElementById("ten-xe");
 const descEl = document.getElementById("mo-ta-xe");
-const nextBtn = document.getElementById("tiep-xe");
 
 // =========================
 // DANH SÁCH XE
@@ -32,7 +31,7 @@ const nextBtn = document.getElementById("tiep-xe");
 const cars = [
   { file: BASE_URL + "models/car1.glb", name: "1975 Porsche 911 (930) Turbo", desc: "Mẫu xe thể thao huyền thoại" },
   { file: BASE_URL + "models/car2.glb", name: "Ferrari F40", desc: "Biểu tượng tốc độ và hiệu năng" },
-  { file: BASE_URL + "models/car3.obj", name: "Ford F150 Raptor", desc: "Sức mạnh vượt mọi giới hạn" }
+  { file: BASE_URL + "models/car3.glb", name: "Ford F150 Raptor", desc: "Sức mạnh vượt mọi giới hạn" }
 ];
 
 let current = 0;
@@ -65,7 +64,7 @@ scene.add(camera);
   const ctx = bgCanvas.getContext("2d");
   const gradient = ctx.createLinearGradient(0, 0, 0, 32);
   gradient.addColorStop(0, "#000000");
-  gradient.addColorStop(1, "#2b0000");
+  gradient.addColorStop(1, "#000000"); // full black
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 32, 32);
   const bgTex = new THREE.CanvasTexture(bgCanvas);
@@ -108,12 +107,12 @@ new RGBELoader().load(
 );
 
 // =========================
-// FLOOR
+// FLOOR (FULL BLACK)
 // =========================
 const floor = new THREE.Mesh(
   new THREE.CircleGeometry(6, 64),
   new THREE.MeshStandardMaterial({
-    color: 0x111111,
+    color: 0x000000, // black
     metalness: 0.3,
     roughness: 0.4,
     envMapIntensity: 0.8
@@ -179,9 +178,7 @@ function loadCar(index, isNext = false) {
         animate();
       }
     },
-
     undefined,
-
     err => {
       console.error("Lỗi tải model:", carInfo.file, err);
       alert("Không thể tải file 3D: " + carInfo.file);
@@ -209,8 +206,46 @@ function animateTransition() {
 }
 
 // =========================
-// NEXT BUTTON
+// TẠO NÚT < >
 // =========================
+const prevBtn = document.createElement("button");
+const nextBtn = document.createElement("button");
+
+prevBtn.innerHTML = "&lt;";
+nextBtn.innerHTML = "&gt;";
+
+[prevBtn, nextBtn].forEach(btn => {
+  btn.style.position = "absolute";
+  btn.style.top = "20%";
+  btn.style.transform = "translateY(-50%)";
+  btn.style.width = "40px";
+  btn.style.height = "40px";
+  btn.style.border = "none";
+  btn.style.borderRadius = "50%";
+  btn.style.background = "#fff";
+  btn.style.color = "#000";
+  btn.style.fontSize = "24px";
+  btn.style.fontWeight = "bold"; // <- in đậm
+  btn.style.cursor = "pointer";
+  btn.style.zIndex = 10;
+});
+
+prevBtn.style.left = "10px";
+nextBtn.style.right = "10px";
+
+// container position relative
+el.style.position = "relative";
+el.appendChild(prevBtn);
+el.appendChild(nextBtn);
+
+// =========================
+// EVENT NÚT
+// =========================
+prevBtn.addEventListener("click", () => {
+  current = (current - 1 + cars.length) % cars.length;
+  loadCar(current, true);
+});
+
 nextBtn.addEventListener("click", () => {
   current = (current + 1) % cars.length;
   loadCar(current, true);

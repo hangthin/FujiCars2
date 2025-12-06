@@ -45,5 +45,9 @@ switch ($n)
 	case"introduce":
 		include("./View/layout_user/introduce.php");
 		break;
+	case"service":
+		include("./View/layout_user/service.php");
+		break;
+	
 }
 ?>

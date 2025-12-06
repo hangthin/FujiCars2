@@ -1,44 +1,44 @@
-
-<?php 
-// Import PHPMailer classes into the global namespace // These must be at the top of your script, not inside a function 
-use PHPMailer\PHPMailer\PHPMailer; 
+<?php
+use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'PHPMailer/src/Exception.php'; 
-require 'PHPMailer/src/PHPMailer.php'; 
-require 'PHPMailer/src/SMTP.php'; 
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
 
-
-function sendOtp($adress, $otp)
+function sendOtp($address, $otp)
 {
-	
-	$mail = new PHPMailer(true); // Passing `true` enables exceptions 
-	try { 
-	//Server settings 
-		$mail->SMTPDebug = 0; // Enable verbose debug output 
-         $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'nhthin366@gmail.com';
-            $mail->Password = 'zhfk ynjf bhue xucf';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
-            $mail->CharSet = 'UTF-8';
+    $mail = new PHPMailer(true);
 
+    try {
+        $mail->SMTPDebug = 0;
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
 
-		//Recipients 
-		$mail->setFrom('FUJICARS@gmail.com', 'Admin STCC Recover Password'); //This is the email your form sends From 
-		$mail->addAddress($adress, 'Mail to:'); // Add a recipient address 
-		//Content 
-		$mail->isHTML(true); // Set email format to HTML 
-		$mail->Subject = 'From email:';
-		$mail->Body = 'Mã xác thực của bạn là:'.$otp; 
+        // Gmail gửi
+        $mail->Username = 'nhthin366@gmail.com';
+        $mail->Password = 'qerw ouap mnmt kfrj';
 
-		$mail->send(); echo 'Message has been sent'; 
-	} catch (Exception $e) { 
-		echo 'Message could not be sent.'; 
-		echo 'Mailer Error: ' . $mail->ErrorInfo; 
-	} 
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        $mail->CharSet = "UTF-8";
+
+        $mail->setFrom('nhthin366@gmail.com', 'FUJICARS - Khôi phục mật khẩu');
+        $mail->addAddress($address);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Mã OTP Xác Thực';
+        $mail->Body = "
+            <h2>Mã OTP Xác Thực</h2>
+            <p>OTP của bạn là: <b>$otp</b></p>
+            <p>Mã có hiệu lực trong 5 phút.</p>
+        ";
+
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        return $mail->ErrorInfo;
+    }
 }
-
-?>

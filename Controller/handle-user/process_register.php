@@ -48,8 +48,22 @@ $sql_insert = "INSERT INTO nguoidung (TenTK, MatKhau, Quyen, DiaChi, NgayCapNhat
                VALUES ('$TenTK', '$MatKhauHash', '$Quyen', '$DiaChi', '$NgayCapNhat', '$phone', '$email')";
 
 if(mysqli_query($conn, $sql_insert)){
-    // Lấy thông tin người dùng vừa đăng ký
+    // Lấy ID người dùng vừa tạo
     $last_id = mysqli_insert_id($conn);
+
+    // Thêm vào bảng khachhang (không dùng MaTK nếu cột không có)
+    $sql_khachhang = "INSERT INTO khachhang (TenTK, DiaChi, email, phone, NgayCapNhat)
+                      VALUES ('$TenTK', '$DiaChi', '$email', '$phone', '$NgayCapNhat')";
+    if(!mysqli_query($conn, $sql_khachhang)){
+        $errorMsg = mysqli_error($conn);
+        echo "<script>
+            alert(".json_encode("Đăng ký thành công nhưng lỗi khi tạo thông tin khách hàng: $errorMsg").");
+            window.location.href='../../index.php';
+        </script>";
+        exit();
+    }
+
+    // Lấy thông tin người dùng vừa đăng ký
     $user_sql = "SELECT * FROM nguoidung WHERE ID = $last_id";
     $user_result = mysqli_query($conn, $user_sql);
     if($user_result && mysqli_num_rows($user_result) > 0){
@@ -62,14 +76,24 @@ if(mysqli_query($conn, $sql_insert)){
         $_SESSION['email']   = $user['email'];
         $_SESSION['phone']   = $user['phone'];
         // Redirect về index.php
-        echo "<script>alert('Đăng ký thành công, bạn đã được đăng nhập'); window.location.href='../../index.php';</script>";
+        echo "<script>
+            alert('Đăng ký thành công, bạn đã được đăng nhập');
+            window.location.href='../../index.php';
+        </script>";
         exit();
     } else {
-        echo "<script>alert('Đăng ký thành công nhưng không thể đăng nhập tự động'); window.location.href='../../index.php';</script>";
+        echo "<script>
+            alert('Đăng ký thành công nhưng không thể đăng nhập tự động');
+            window.location.href='../../index.php';
+        </script>";
         exit();
     }
 } else {
-    echo "<script>alert('Lỗi thêm người dùng: ".mysqli_error($conn)."'); window.history.back();</script>";
+    $errorMsg = mysqli_error($conn);
+    echo "<script>
+        alert(".json_encode("Lỗi thêm người dùng: $errorMsg").");
+        window.history.back();
+    </script>";
 }
 
 mysqli_close($conn);

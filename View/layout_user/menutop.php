@@ -15,6 +15,7 @@ include 'Controller/config/config.php';
     <div class="fjx-left">
       <a href="index.php" data-key="home">Trang Chủ</a>
       <a href="?n=introduce" data-key="product">Giới Thiệu</a>
+       <a href="?n=service">Dịch Vụ</a>
       <a href="?n=product" data-key="product">Sản Phẩm</a>
       <a href="?n=register" data-key="register">Đăng Ký</a>
       <a href="?n=cart" data-key="cart">Giỏ Hàng</a>
@@ -67,8 +68,8 @@ if (isset($_GET['search'])) {
     $TenSP = trim($_GET['TenSP']);
     $sql = "SELECT * FROM sanpham WHERE TenSP LIKE '%$TenSP%'";
     $kq = mysqli_query($conn, $sql);
-    echo "<h2 style='text-align:center;color:#000;margin-top:120px;'>KẾT QUẢ TÌM KIẾM: 
-          <span style=\"color:red;\">$TenSP</span></h2>";
+    echo "<h1 style='text-align:center;color:#000;margin-top:120px;'>KẾT QUẢ TÌM KIẾM: 
+          <span style=\"color:red;\">$TenSP</span></h1>";
     echo "<div class='fjx-result-area'>";
     if (mysqli_num_rows($kq) > 0) {
         while ($row = mysqli_fetch_assoc($kq)) {
