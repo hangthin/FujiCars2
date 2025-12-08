@@ -1,20 +1,57 @@
-// update-invoice.js - Nhận realtime đơn hàng mới và hiển thị thông báo (Render Optimized)
+// update-invoice.js - Nhận realtime đơn hàng mới + âm thanh + banner
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    // ======================================================
+    // 🚀 AUTO UNLOCK AUDIO (Chrome / iPhone / Android)
+    // ======================================================
+    let audioAllowed = false;
+
+    const unlocker = document.getElementById("audioUnlocker");
+
+    if (unlocker) {
+        unlocker.onplay = () => {
+            audioAllowed = true;
+            console.log("✔ Auto-Unlock âm thanh thành công");
+            unlocker.muted = false; // cho phép phát tiếng về sau
+        };
+
+        // Chạy autoplay muted → unlock audio
+        unlocker.play().catch(() => {
+            console.warn("Autoplay bị chặn → sẽ fallback bằng click");
+        });
+    }
+
+    // Fallback khi user click vào trang
+    document.body.addEventListener("mousedown", () => {
+        if (!audioAllowed) {
+            audioAllowed = true;
+            unlocker.muted = false;
+            console.log("✔ Âm thanh đã được kích hoạt bằng click");
+        }
+    });
+
+    document.body.addEventListener("touchstart", () => {
+        if (!audioAllowed) {
+            audioAllowed = true;
+            unlocker.muted = false;
+            console.log("✔ Âm thanh đã được kích hoạt bằng touch");
+        }
+    });
+
+
     // ============================
-    // PHẦN TỬ GIAO DIỆN
+    // GIAO DIỆN
     // ============================
     const chatbox = document.getElementById('orderChatbox');
     const badge = document.getElementById('orderBadge');
-    const popup = document.getElementById('orderPopup');
-    const popupContent = document.getElementById('popupContent');
     const notification = document.getElementById('orderNotification');
     const orderCount = document.getElementById('orderCount');
     const viewDetail = document.getElementById('viewDetail');
 
+
     // ============================
-    // HÀNG ĐỢI ĐƠN CHƯA XEM (LocalStorage)
+    // HÀNG ĐỢI ĐƠN MỚI
     // ============================
     let orderQueue = JSON.parse(localStorage.getItem("orderQueue") || "[]");
 
@@ -29,15 +66,14 @@ document.addEventListener("DOMContentLoaded", () => {
             badge.style.display = "none";
         }
     };
-
     updateBadge();
 
-    // ============================
-    // SOCKET.IO (Render Optimized)
-    // ============================
 
+    // ============================
+    // SOCKET.IO
+    // ============================
     const socket = io("https://nodejs-53zg.onrender.com", {
-        transports: ["websocket"],        // BẮT BUỘC CHO RENDER FREE
+        transports: ["websocket"],
         reconnection: true,
         reconnectionAttempts: Infinity,
         reconnectionDelay: 1000,
@@ -49,39 +85,79 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     socket.on("disconnect", () => {
-        console.warn(">> Mất kết nối realtime. Đang thử reconnect...");
+        console.warn(">> Mất kết nối realtime. Đang reconnect...");
     });
 
+
     // ============================
-    // SỰ KIỆN NHẬN ĐƠN MỚI
+    // 🔥 KHI CÓ ĐƠN MỚI
     // ============================
     socket.on("newOrder", (order) => {
 
-    // Thêm đơn vào queue
-    orderQueue.push(order);
-    saveQueue();
-    updateBadge();
-    pulseBadge();
+        console.log("🔥 ĐƠN MỚI:", order);
 
-    // Lưu ID mới để highlight ở trang update-invoice
-    const newInvoices = JSON.parse(localStorage.getItem("newInvoices") || "[]");
-    if (!newInvoices.includes(order.ID)) {
-        newInvoices.push(order.ID);
-        localStorage.setItem("newInvoices", JSON.stringify(newInvoices));
-    }
+        // =============================
+        // 🔊 PHÁT ÂM THANH
+        // =============================
+        if (audioAllowed) {
+            unlocker.currentTime = 0;
+            unlocker.play().catch(err => console.warn("Không phát được:", err));
+        } else {
+            console.warn("⚠ Audio chưa unlock (trình duyệt chặn).");
+        }
 
-    // Thông báo nhỏ dạng banner
-    orderCount.textContent = `Bạn có ${orderQueue.length} đơn hàng mới!`;
-    showNotification();
+        // Thêm vào queue
+        orderQueue.push(order);
+        saveQueue();
+        updateBadge();
+        pulseBadge();
 
-    // ❌ KHÔNG HIỆN POPUP NỮA
-    // popup.style.display = "block";
-    // popupContent.innerHTML = "...";  // bỏ luôn
-});
+        // Lưu highlight
+        const newInvoices = JSON.parse(localStorage.getItem("newInvoices") || "[]");
+        if (!newInvoices.includes(order.ID)) {
+            newInvoices.push(order.ID);
+            localStorage.setItem("newInvoices", JSON.stringify(newInvoices));
+        }
+
+        // Banner báo đơn mới
+        orderCount.textContent = `Bạn có ${orderQueue.length} đơn hàng mới!`;
+        showNotification();
+    });
 
 
     // ============================
-    // HÀM XÓA TRẠNG THÁI CHƯA ĐỌC
+    // BANNER THÔNG BÁO
+    // ============================
+    function showNotification() {
+        notification.style.display = "block";
+
+        notification.classList.remove("animate__bounceInDown");
+        void notification.offsetWidth;
+        notification.classList.add("animate__bounceInDown");
+
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 2000);
+    }
+
+
+    // ============================
+    // HIỆU ỨNG NHỊP TIM
+    // ============================
+    function pulseBadge() {
+        badge.animate(
+            [
+                { transform: "scale(1)" },
+                { transform: "scale(1.2)" },
+                { transform: "scale(1)" }
+            ],
+            { duration: 500, iterations: 1 }
+        );
+    }
+
+
+    // ============================
+    // CHUYỂN TRANG UPDATE-INVOICE
     // ============================
     const clearUnread = () => {
         orderQueue = [];
@@ -89,9 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
         updateBadge();
     };
 
-    // ============================
-    // CHUYỂN TRANG UPDATE-INVOICE
-    // ============================
     const goToInvoice = () => {
         clearUnread();
         window.location.href = "index.php?n=update-invoice";
@@ -100,39 +173,4 @@ document.addEventListener("DOMContentLoaded", () => {
     chatbox.addEventListener("click", goToInvoice);
     viewDetail.addEventListener("click", goToInvoice);
 
-    // ============================
-    // THÔNG BÁO BUNG TỪ TRÊN XUỐNG
-    // ============================
-    function showNotification() {
-        notification.style.display = "block";
-
-        // Reset animation để chạy lại
-        notification.classList.remove("animate__bounceInDown");
-        void notification.offsetWidth;
-        notification.classList.add("animate__bounceInDown");
-
-        // Auto hide
-        setTimeout(() => { notification.style.display = "none"; }, 1800);
-    }
-
-    // ============================
-    // HIỆU ỨNG NHỊP TIM CHO BADGE
-    // ============================
-    function pulseBadge() {
-        badge.animate(
-            [
-                { transform: "scale(1)" },
-                { transform: "scale(1.25)" },
-                { transform: "scale(1)" }
-            ],
-            { duration: 500, iterations: 1 }
-        );
-    }
-
-    // ============================
-    // ĐÓNG POPUP
-    // ============================
-    window.closeOrderPopup = () => {
-        popup.style.display = "none";
-    };
 });

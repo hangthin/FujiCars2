@@ -19,6 +19,12 @@ include "Controller/handle-admin/admin_dashboard_data.php";
 
 </head>
 <body>
+<audio id="audioUnlocker"
+       src="View/sound/new-order.mp3"
+       muted autoplay playsinline
+       style="display:none;">
+</audio>
+
 
 <!-- LOADING ANIMATION -->
 <div id="loadingOverlay">
@@ -47,17 +53,6 @@ include "Controller/handle-admin/admin_dashboard_data.php";
 <!-- POPUP -->
 
 <!-- load your admin JS after socket.io -->
-
-
-
-
-
-
-
-
-
-
-
 
 
 <!-- ================= DASHBOARD ================= -->
@@ -205,9 +200,7 @@ window.chartData = {
 
 <!-- DASHBOARD JS (bao gồm realtime) -->
 <script src="js/admin_dashboard.js"></script>
-<script src="js/update-invoice.js"></script>
 <script src="js/check_new_oder.js"></script>
-
 <!-- LOADING JS -->
 <script><?php include "js/car_loading.js"; ?></script>
 
