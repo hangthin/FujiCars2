@@ -29,6 +29,7 @@ $newInsertedID = $data["newInsertedID"];
 </head>
 <body>
 <div class="wrapbox">
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <h1><i class="fa-solid fa-file-invoice"></i> CẬP NHẬT HÓA ĐƠN</h1>
     <?php if($message): ?>
         <p style="color:<?= $is_error ? 'red':'green' ?>"><?= htmlspecialchars($message) ?></p>
@@ -60,7 +61,14 @@ $newInsertedID = $data["newInsertedID"];
         <form method="POST" id="multiActionForm" style="display:inline;">
             <div id="multiHiddenInputs"></div>
             <button type="submit" name="sua_all" class="btnstyle btnedit"><i class="fa-solid fa-check"></i> Xác nhận tất cả</button>
-            <button type="submit" name="xoa_all" class="btndel" onclick="return confirm('Bạn có chắc muốn xóa tất cả hóa đơn đã chọn?');"><i class="fa-solid fa-trash"></i> Xóa tất cả</button>
+            <button type="submit" name="xoa_all" class="btndel" onclick="return confirm('Bạn có chắc muốn xóa tất cả hóa đơn đã chọn?');">
+            <i class="fa-solid fa-trash"></i> Xóa tất cả</button>
+           
+    <button type="button" class="btnstyle" id="printButtonNX" style="background:#007bff;color:#fff;width:150px;height:50px;">
+        <i class="fa-solid fa-print"></i> In danh sách
+    </button>
+
+
         </form>
     </div>
 

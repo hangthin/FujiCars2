@@ -40,35 +40,59 @@ $chartValues = json_encode(array_values($chartData));
 <title>Thống kê doanh thu</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body class="twxstat-body">
+
 <h1 class="twxstat-title">THỐNG KÊ DOANH THU</h1>
-</br>
+<br>
+
+
+
+<!-- Thống kê tổng quan -->
 <div class="twxstat-stats">
     <div class="twxstat-box">
         <h2 style="color:white"><?= number_format($totalRevenue, 0, ',', '.') ?>₫</h2>
         <p>Tổng doanh thu</p>
     </div>
+
     <div class="twxstat-box">
         <h2 style="color:white"><?= $totalOrders ?></h2>
         <p>Tổng số hóa đơn</p>
     </div>
+
     <div class="twxstat-box">
         <h2 style="color:white"><?= number_format($avgRevenue, 0, ',', '.') ?>₫</h2>
         <p>Trung bình mỗi hóa đơn</p>
     </div>
 </div>
+<!-- Bộ lọc -->
+<div class="twxstat-filter-box">
+    <select id="filter-type" class="twxstat-select">
+        <option value="">Chọn dạng thống kê</option>
+        <option value="day">Theo ngày</option>
+        <option value="week">Theo tuần</option>
+        <option value="month">Theo tháng</option>
+        <option value="year">Theo năm</option>
+    </select>
 
+    <button id="filter-btn" class="twxstat-btn">Lọc</button>
+    <button id="reset-btn" class="twxstat-btn-reset">Reset</button>
+</div>
+</br>
+<!-- Biểu đồ -->
 <div class="twxstat-chart-container">
     <canvas id="twxstatRevenueChart" height="100"></canvas>
 </div>
 
+<!-- Bảng chi tiết -->
 <table class="twxstat-table">
 <thead>
 <tr>
-<th>ID</th><th>Khách hàng</th><th>Điện thoại</th><th>Địa chỉ</th><th>Ngày nhận</th><th>Thời gian nhận</th>
-<th>Thanh toán</th><th>Trạng thái</th><th>Tổng tiền</th><th>Ngày tạo</th>
+<th>ID</th><th>Khách hàng</th><th>Điện thoại</th><th>Địa chỉ</th><th>Ngày nhận</th>
+<th>Thời gian nhận</th><th>Thanh toán</th><th>Trạng thái</th><th>Tổng tiền</th><th>Ngày tạo</th>
 </tr>
 </thead>
+
 <tbody>
 <?php foreach ($orders as $o): ?>
 <tr>
@@ -86,11 +110,15 @@ $chartValues = json_encode(array_values($chartData));
 <?php endforeach; ?>
 </tbody>
 </table>
+
 <div class="twxstat-footer">&copy; <?= date('Y') ?> Thống kê doanh thu</div>
+
 <script>
     const chartLabels = <?= $chartLabels ?>;
     const chartValues = <?= $chartValues ?>;
 </script>
+
 <script src="js/revenue.js"></script>
+
 </body>
 </html>

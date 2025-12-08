@@ -13,6 +13,31 @@ if (!isset($_SESSION['TenTK'])) {
 
 $TenTK = $_SESSION['TenTK'];
 
+// Xử lý xóa hóa đơn nếu POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bill_id'])) {
+    $bill_id = intval($_POST['bill_id']);
+
+    // Kiểm tra hóa đơn thuộc user và chưa xử lý
+    $check = $conn->prepare("SELECT Status FROM hoadon WHERE ID = ? AND Name = ?");
+    $check->bind_param("is", $bill_id, $TenTK);
+    $check->execute();
+    $result = $check->get_result();
+    $bill = $result->fetch_assoc();
+
+    if ($bill && $bill['Status'] == 0) {
+        // Xóa hóa đơn
+        $del = $conn->prepare("DELETE FROM hoadon WHERE ID = ?");
+        $del->bind_param("i", $bill_id);
+        if ($del->execute()) {
+            $msg = "Xóa hóa đơn thành công.";
+        } else {
+            $msg = "Xóa hóa đơn thất bại.";
+        }
+    } else {
+        $msg = "Hóa đơn không tồn tại hoặc đã được xử lý, không thể xóa.";
+    }
+}
+
 // Lấy thông tin người dùng
 $khQuery = $conn->prepare("SELECT * FROM nguoidung WHERE TenTK = ?");
 $khQuery->bind_param("s", $TenTK);
@@ -42,6 +67,11 @@ $bills = $billQuery->get_result();
 </head>
 <body class="fjxacc-body">
 <div class="fjxacc-container">
+
+    <?php if(isset($msg)): ?>
+        <p style="color:green; text-align:center;"><?= htmlspecialchars($msg) ?></p>
+    <?php endif; ?>
+
     <!-- FORM AVATAR + INFO -->
     <div class="fjxacc-form">
         <div class="fjxacc-avatar">
@@ -70,6 +100,7 @@ $bills = $billQuery->get_result();
                         <th>Trạng thái xử lý</th>
                         <th>Trạng thái vận chuyển</th>
                         <th>Tổng tiền</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,6 +119,16 @@ $bills = $billQuery->get_result();
                         </td>
                         <td><?= htmlspecialchars($bill['VanChuyenStatus']) ?></td>
                         <td><?= number_format($bill['TotalPrice'],0,',','.') ?>₫</td>
+                        <td>
+                            <?php if($bill['Status']==0): ?>
+                                <form method="post" onsubmit="return confirm('Bạn có chắc muốn xóa hóa đơn này?');">
+                                    <input type="hidden" name="bill_id" value="<?= $bill['ID'] ?>">
+                                    <button type="submit" class="fjxacc-delete-btn">Xóa</button>
+                                </form>
+                            <?php else: ?>
+                                <span style="color:gray;">Không thể xóa</span>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php endwhile; ?>
                 </tbody>

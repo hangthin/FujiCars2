@@ -2,42 +2,45 @@
 // - Click vào dòng để đổ dữ liệu lên form sửa
 // - Chọn nhiều hóa đơn để xác nhận / xóa
 // - Lọc hóa đơn theo tên
-// - Highlight hóa đơn mới thêm
+// - Highlight hóa đơn mới thêm (PHP + Realtime)
 document.addEventListener("DOMContentLoaded", () => {
-    // ==========================
-    // Lấy các phần tử DOM cần dùng
-    // ==========================
-    const tableBody = document.querySelector("#invoiceTableNX tbody");   // Body của bảng hóa đơn
-    const selectAll = document.getElementById("selectAllNX");            // Checkbox chọn tất cả
-    const multiForm = document.getElementById("multiActionForm");        // Form xử lý nhiều hóa đơn
-    const multiHiddenInputs = document.getElementById("multiHiddenInputs"); // Nơi sinh input ID ẩn
-    const invoiceForm = document.getElementById('invoiceFormNX');        // Form thêm/sửa hóa đơn
-    const submitButton = document.getElementById('submitButtonNX');      // Nút thêm/sửa
 
-    // ================================================
-    // CLICK VÀO DÒNG BẢNG → ĐỔ DỮ LIỆU LÊN FORM ĐỂ SỬA
-    // ================================================
+    // ==========================
+    // DOM Elements
+    // ==========================
+    const tableBody = document.querySelector("#invoiceTableNX tbody");
+    const selectAll = document.getElementById("selectAllNX");
+    const multiForm = document.getElementById("multiActionForm");
+    const multiHiddenInputs = document.getElementById("multiHiddenInputs");
+    const invoiceForm = document.getElementById('invoiceFormNX');
+    const submitButton = document.getElementById('submitButtonNX');
+
+    // ================================
+    // ÂM THANH THÔNG BÁO ĐƠN HÀNG MỚI
+    // ================================
+    const newOrderSound = new Audio("View/sound/new-order.mp3");
+    newOrderSound.volume = 1; // chỉnh volume
+
+    // ================================
+    // CLICK VÀO DÒNG → LOAD FORM SỬA
+    // ================================
     tableBody.querySelectorAll("tr").forEach(row => {
         row.addEventListener("click", (e) => {
 
-            // Nếu click vào checkbox thì bỏ qua — tránh bật chế độ sửa
-            if (e.target.tagName.toLowerCase() === 'input' && e.target.type === 'checkbox') 
+            if (e.target.tagName.toLowerCase() === 'input' && e.target.type === 'checkbox')
                 return;
 
-            // ===== ĐỔ DỮ LIỆU LÊN FORM =====
             document.getElementById('invoiceIDNX').value = row.dataset.id;
             document.getElementById('invoiceNameNX').value = row.dataset.name;
             document.getElementById('invoicePhoneNX').value = row.dataset.phone;
             document.getElementById('invoiceAddressNX').value = row.dataset.address;
             document.getElementById('invoiceDateReceiveNX').value = row.dataset.datereceive;
 
-            // Xử lý giờ: cắt bớt giây (HH:MM:SS -> HH:MM)
             let timeValue = row.dataset.timereceive;
-            if (timeValue.includes(':')) 
+            if (timeValue.includes(':'))
                 timeValue = timeValue.substring(0, 5);
             document.getElementById('invoiceTimeReceiveNX').value = timeValue;
 
-            // Chọn đúng phương thức thanh toán
             const methodSelect = document.getElementById('invoiceMethodNX');
             for (let i = 0; i < methodSelect.options.length; i++) {
                 if (methodSelect.options[i].value.trim() === row.dataset.method.trim()) {
@@ -48,51 +51,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById('invoiceTotalPriceNX').value = row.dataset.total;
 
-            // Chuyển nút "Thêm" thành "Sửa"
             submitButton.textContent = "Sửa hóa đơn";
-
-            // Cuộn tới form cho dễ nhìn
             invoiceForm.scrollIntoView({ behavior: "smooth" });
         });
     });
 
-    // ================================================
-    // RESET FORM → MODE THÊM HÓA ĐƠN
-    // ================================================
+    // ================================
+    // RESET FORM → MODE THÊM
+    // ================================
     invoiceForm.addEventListener("reset", () => {
         submitButton.textContent = "Thêm hóa đơn";
     });
 
-    // ================================================
-    // CHECKBOX CHỌN TẤT CẢ TRONG BẢNG
-    // ================================================
+    // ================================
+    // CHECKBOX CHỌN TẤT CẢ
+    // ================================
     selectAll.addEventListener("change", () => {
         document.querySelectorAll(".selectNX")
             .forEach(cb => cb.checked = selectAll.checked);
     });
 
-    // ================================================
-    // TRƯỚC KHI SUBMIT FORM XỬ LÝ NHIỀU HÓA ĐƠN
-    // Tự động tạo input hidden cho từng ID được chọn
-    // ================================================
+    // ======================================================
+    // XỬ LÝ NHIỀU HÓA ĐƠN → TẠO INPUT HIDDEN IDs[]
+    // ======================================================
     multiForm.addEventListener("submit", (e) => {
 
-        // Lấy danh sách ID từ những checkbox đang bật
         const selectedIds = Array.from(document.querySelectorAll(".selectNX"))
             .filter(cb => cb.checked)
             .map(cb => cb.closest("tr").dataset.id);
 
-        // Nếu không chọn gì → báo lỗi + không submit
         if (selectedIds.length === 0) {
             alert("Vui lòng chọn ít nhất 1 hóa đơn!");
             e.preventDefault();
             return;
         }
 
-        // Xóa input ẩn cũ
         multiHiddenInputs.innerHTML = "";
 
-        // Tạo input hidden IDs[] cho từng ID
         selectedIds.forEach(id => {
             const input = document.createElement("input");
             input.type = "hidden";
@@ -102,39 +97,140 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // ================================================
-    // LỌC HÓA ĐƠN THEO TÊN KHÁCH HÀNG
-    // ================================================
+    // ================================
+    // LỌC THEO TÊN
+    // ================================
     const searchInputNX = document.getElementById('searchInputNX');
     searchInputNX.addEventListener('input', function () {
         const filter = this.value.toLowerCase();
 
         tableBody.querySelectorAll('tr').forEach(row => {
-            const nameCell = row.cells[2]; // Cột Name
+            const nameCell = row.cells[2];
             row.style.display = nameCell.textContent.toLowerCase().includes(filter) ? '' : 'none';
         });
     });
 
-    // ================================================
-    // HIGHLIGHT ĐƠN MỚI (sau khi thêm)
-    // newInsertedInvoiceID được PHP sinh ra
-    // ================================================
+    // ================================
+    // HIGHLIGHT ĐƠN MỚI TỪ PHP
+    // ================================
     if (typeof newInsertedInvoiceID !== "undefined" && newInsertedInvoiceID > 0) {
         const newRow = tableBody.querySelector(`tr[data-id='${newInsertedInvoiceID}']`);
-
-        // Chỉ highlight nếu đơn còn trạng thái "chờ xử lý"
         if (newRow && newRow.dataset.status == 0) {
             newRow.classList.add("highlight-new");
         }
     }
 
-    // ================================================
-    // NẾU ĐÃ NHẤN "Xác nhận" THÌ BỎ MÀU HIGHLIGHT
-    // ================================================
+    // ================================
+    // NHẤN "Xác nhận" → BỎ HIGHLIGHT
+    // ================================
     tableBody.querySelectorAll("button[name='sua']").forEach(btn => {
         btn.addEventListener("click", () => {
             const row = btn.closest("tr");
             row.classList.remove("highlight-new");
         });
     });
+
+
+
+    // =================================================================
+    //  🔥 REALTIME: NHẬN ĐƠN MỚI TỪ NODE.JS + PHÁT ÂM THANH
+    // =================================================================
+    const socket = io("https://nodejs-53zg.onrender.com", {
+        transports: ["websocket"],
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1200
+    });
+
+    socket.on("connect", () => {
+        console.log(">> update-invoice: realtime connected", socket.id);
+    });
+
+    socket.on("newOrder", (order) => {
+        console.log(">> Realtime: thêm hóa đơn vào bảng:", order);
+
+        // 🔊 PHÁT ÂM THANH
+        newOrderSound.play().catch(()=>{});
+
+        // 🔥 TẠO DÒNG MỚI
+        const tr = document.createElement("tr");
+        tr.dataset.id = order.ID;
+        tr.dataset.name = order.Name;
+        tr.dataset.phone = order.Phone;
+        tr.dataset.address = order.Address;
+        tr.dataset.datereceive = order.DateReceive ?? "";
+        tr.dataset.timereceive = order.TimeReceive ?? "";
+        tr.dataset.method = order.Method;
+        tr.dataset.total = order.TotalPrice;
+        tr.dataset.status = 0;
+        tr.classList.add("highlight-new");
+
+        tr.innerHTML = `
+            <td><input type="checkbox" class="selectNX"></td>
+            <td>${order.ID}</td>
+            <td>${order.Name}</td>
+            <td>${order.Phone}</td>
+            <td>${order.Address}</td>
+            <td>${order.DateReceive ?? ""}</td>
+            <td>${order.TimeReceive ?? ""}</td>
+            <td>${order.Method}</td>
+            <td><i class="fa-solid fa-hourglass-half" style="color:red"></i> Đang xử lý</td>
+            <td>${Number(order.TotalPrice).toLocaleString()} VND</td>
+            <td>${order.DateCreate ?? ""}</td>
+            <td>
+                <div class="btncolstyle">
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="ID" value="${order.ID}">
+                        <input type="hidden" name="Status" value="1">
+                        <button type="submit" name="sua" class="btnedit">
+                            <i class="fa-solid fa-check"></i> Xác nhận
+                        </button>
+                    </form>
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="ID" value="${order.ID}">
+                        <button type="submit" name="xoa" class="btndel">
+                            <i class="fa-solid fa-trash"></i> Xóa
+                        </button>
+                    </form>
+                </div>
+            </td>
+        `;
+
+        tableBody.prepend(tr);
+
+        tr.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        tr.animate(
+            [
+                { backgroundColor: "#fff3cd" },
+                { backgroundColor: "#ffe8a1" },
+                { backgroundColor: "#fff3cd" }
+            ],
+            { duration: 1200 }
+        );
+    });
+
+}); // END DOM READY
+
+
+
+// =============================
+// NÚT PRINT
+// =============================
+document.getElementById('printButtonNX').addEventListener('click', function() {
+    const table = document.getElementById('invoiceTableNX');
+    const newWin = window.open('', '', 'width=1200,height=800');
+
+    newWin.document.write('<html><head><title>In danh sách hóa đơn</title>');
+    newWin.document.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">');
+    newWin.document.write('<style>table{width:100%;border-collapse:collapse;} th, td{border:1px solid #ccc;padding:8px;text-align:center;} th{background:#f2f2f2;}</style>');
+    newWin.document.write('</head><body>');
+    newWin.document.write('<h2>Danh sách hóa đơn</h2>');
+    newWin.document.write(table.outerHTML);
+    newWin.document.write('</body></html>');
+
+    newWin.document.close();
+    newWin.focus();
+    newWin.print();
+    newWin.close();
 });

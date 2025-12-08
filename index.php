@@ -1,5 +1,4 @@
-
-		<?php
+<?php
 		session_start();              
 		ob_start();               
 		
@@ -28,4 +27,4 @@
 			include ("Controller/handle-user/main.php");
 			include ("View/layout_user/footer.php");
 		}
-		?>
+	?>

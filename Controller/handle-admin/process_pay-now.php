@@ -62,14 +62,18 @@ if ($stmt->execute()) {
     $newID = $stmt->insert_id;
 
     // Tạo payload đúng
-    $order = [
-        "ID" => $newID,
-        "Name" => $name,
-        "Phone" => $phone,
-        "Address" => $address,
-        "TotalPrice" => $TongTien,
-        "DateCreate" => $DateCreate
-    ];
+$order = [
+    "ID" => $newID,
+    "Name" => $name,
+    "Phone" => $phone,
+    "Address" => $address,
+    "DateReceive" => $DateReceive,
+    "TimeReceive" => $TimeReceive,
+    "Method" => $method,
+    "TotalPrice" => $TongTien,
+    "Status" => $Status,
+    "DateCreate" => $DateCreate
+];
 
     // Emit sang Node.js — SAU KHI TẠO ĐƠN
     include "../handle-admin/order_trigger.php";

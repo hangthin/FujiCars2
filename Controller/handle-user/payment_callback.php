@@ -62,16 +62,21 @@ $stmt->close();
 // ===============================
 include "../handle-admin/order_trigger.php";
 
-$orderData = [
-    "id"      => $bill_id,
-    "name"    => $name,
-    "phone"   => $phone,
-    "address" => $address,
-    "total"   => $total,
-    "created" => date('Y-m-d H:i:s')
+$order = [
+    "ID" => $bill_id,       // ID hóa đơn vừa insert
+    "Name" => $name,
+    "Phone" => $phone,
+    "Address" => $address,
+    "DateReceive" => $DateReceive,
+    "TimeReceive" => $TimeReceive,
+    "Method" => $method,
+    "TotalPrice" => $total,
+    "Status" => $Status,
+    "DateCreate" => $DateCreate
 ];
 
-emitNewOrder($orderData);
+emitNewOrder($order);  // Gửi đúng biến
+
 
 // ===============================
 // ĐÁNH DẤU DASHBOARD CHƯA XEM ĐƠN MỚI

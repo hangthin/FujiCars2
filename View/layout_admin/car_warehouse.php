@@ -191,6 +191,7 @@ $jsonOrders = json_encode($orders, JSON_UNESCAPED_UNICODE);
                 <div style="margin-top:12px;">
                     <button type="submit" name="capnhat" class="kxBtn">Cập nhật kho xe</button>
                 </div>
+                
             </form>
         </div>
 
@@ -215,7 +216,10 @@ $jsonOrders = json_encode($orders, JSON_UNESCAPED_UNICODE);
                 </select>
             </div>
   
-               
+               <div style="margin-bottom:12px; text-align:right;">
+    <button id="printBtn" class="kxBtn" style="background:#4caf50;">In danh sách</button>
+</div>
+
             <div id="orderCards"></div>
         </div>
     </div>
@@ -297,6 +301,39 @@ if(msgBox){
         msgBox.style.opacity = "0"; 
     }, 2000);
 }
+
+document.getElementById('printBtn').addEventListener('click', ()=>{
+    let printWindow = window.open('', '', 'height=600,width=1000');
+    printWindow.document.write('<html><head><title>In danh sách kho xe</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write(`
+        body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif; padding:20px;}
+        table{width:100%; border-collapse:collapse;}
+        th, td{border:1px solid #ccc; padding:8px; text-align:center;}
+        th{background:#1976d2; color:#fff;}
+        td span{display:inline-block; width:60px; padding:2px 4px; border-radius:4px;}
+        .kxPending{background:#ffc107; color:#000;}
+        .kxDoing{background:#4caf50; color:#fff;}
+        .kxCancel{background:#f44336; color:#fff;}
+    `);
+    printWindow.document.write('</style></head><body>');
+    printWindow.document.write('<h2>Danh sách kho xe</h2>');
+    printWindow.document.write('<table>');
+    printWindow.document.write('<tr><th>Xe</th><th>Còn sẵn</th><th>Lái thử</th><th>Bảo trì</th></tr>');
+    filtered.forEach(o=>{
+        printWindow.document.write('<tr>');
+        printWindow.document.write('<td>'+o.car+'</td>');
+        printWindow.document.write('<td><span class="kxPending">'+o.coSan+'</span></td>');
+        printWindow.document.write('<td><span class="kxDoing">'+o.laiThu+'</span></td>');
+        printWindow.document.write('<td><span class="kxCancel">'+o.baoTri+'</span></td>');
+        printWindow.document.write('</tr>');
+    });
+    printWindow.document.write('</table>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+});
+
 </script>
 </body>
 </html>
