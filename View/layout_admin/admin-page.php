@@ -20,7 +20,7 @@ include "Controller/handle-admin/admin_dashboard_data.php";
 </head>
 <body>
 <audio id="audioUnlocker"
-       src="View/sound/new-order.mp3"
+       src="View/sound/silent.mp3"
        muted autoplay playsinline
        style="display:none;">
 </audio>
@@ -201,6 +201,8 @@ window.chartData = {
 <!-- DASHBOARD JS (bao gồm realtime) -->
 <script src="js/admin_dashboard.js"></script>
 <script src="js/check_new_oder.js"></script>
+
+
 <!-- LOADING JS -->
 <script><?php include "js/car_loading.js"; ?></script>
 

@@ -27,6 +27,41 @@ $currentPage = $data["currentPage"];
 .btndel{background:#dc3545;color:#fff;width:150px;height:50px;}
 .searchbox{padding:6px;width:1250px;}
 .highlight-new{background-color:#fff3cd !important; transition: background 1s;}
+/* === SELECT FILTER GIỐNG BUTTON === */
+#statusFilterNX {
+    padding: 12px 16px !important;
+    width: 150px !important;
+    border: none;
+    border-radius: 6px;
+    background: #007bff;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 500;
+    outline: none;
+    transition: 0.25s;
+    appearance: none; /* Ẩn giao diện mặc định */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    /* Mũi tên trắng */
+    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='12' width='12' xmlns='http://www.w3.org/2000/svg'><polygon points='0,0 12,0 6,8'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+}
+
+/* Hover */
+#statusFilterNX:hover {
+    background: #0069d9;
+}
+
+/* Focus */
+#statusFilterNX:focus {
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.4);
+}
+
+
 </style>
 </head>
 <body>
@@ -72,12 +107,18 @@ $currentPage = $data["currentPage"];
                 onclick="return confirm('Bạn có chắc muốn xóa tất cả đã chọn?');">
                 <i class="fa-solid fa-trash"></i> Xóa tất cả
             </button>
-
             <button type="button" class="btnstyle" id="printButtonNX" 
                 style="background:#007bff;color:#fff;width:150px;height:50px;">
                 <i class="fa-solid fa-print"></i> In danh sách
             </button>
         </form>
+       
+  <select id="statusFilterNX" style="padding:8px; width:200px;">
+        <option value="all">Tất cả trạng thái</option>
+        <option value="0">Đang xử lý</option>
+        <option value="1">Đã xác nhận</option>
+    </select>
+
     </div>
 
     <br>
@@ -163,7 +204,9 @@ $currentPage = $data["currentPage"];
     </div>
 
 </div>
-
+<script>
+    const TOTAL_PAGES = <?= $totalPages ?>;
+</script>
 <script src="js/update-invoice.js"></script>
 </body>
 </html>

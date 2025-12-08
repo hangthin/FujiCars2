@@ -92,37 +92,28 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================
     // 🔥 KHI CÓ ĐƠN MỚI
     // ============================
-    socket.on("newOrder", (order) => {
-
+        socket.on("newOrder", (order) => {
         console.log("🔥 ĐƠN MỚI:", order);
 
-        // =============================
-        // 🔊 PHÁT ÂM THANH
-        // =============================
-        if (audioAllowed) {
-            unlocker.currentTime = 0;
-            unlocker.play().catch(err => console.warn("Không phát được:", err));
-        } else {
-            console.warn("⚠ Audio chưa unlock (trình duyệt chặn).");
-        }
+        // 🔊 CHỈ PHÁT ÂM THANH LÚC NÀY
+        playNewOrderSound();
 
-        // Thêm vào queue
+        // Queue + badge + highlight
         orderQueue.push(order);
         saveQueue();
         updateBadge();
         pulseBadge();
 
-        // Lưu highlight
         const newInvoices = JSON.parse(localStorage.getItem("newInvoices") || "[]");
         if (!newInvoices.includes(order.ID)) {
             newInvoices.push(order.ID);
             localStorage.setItem("newInvoices", JSON.stringify(newInvoices));
         }
 
-        // Banner báo đơn mới
         orderCount.textContent = `Bạn có ${orderQueue.length} đơn hàng mới!`;
         showNotification();
     });
+
 
 
     // ============================
@@ -138,6 +129,16 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             notification.style.display = "none";
         }, 2000);
+    }
+        function playNewOrderSound() {
+        if (!audioAllowed) {
+            console.warn("⚠ Audio chưa unlock");
+            return;
+        }
+
+        const audio = new Audio("View/sound/new-order.mp3");
+        audio.volume = 1;
+        audio.play().catch(err => console.warn("Không phát âm thanh:", err));
     }
 
 

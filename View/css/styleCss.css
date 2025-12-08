@@ -2019,6 +2019,47 @@ tr:hover {
 .animateStroke .checkNX__tick,
 .animateStroke .errorNX__cross { animation:dashNX 0.3s cubic-bezier(.65,0,.45,1) 0.6s forwards; }
 @keyframes dashNX { to { stroke-dashoffset:0; } }
+/* Container */
+.filter-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 10px 0 20px 0;
+}
+
+/* Dropdown Filter */
+.filter-select {
+    padding: 10px 14px;
+    width: 220px;
+    font-size: 14px;
+    
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    
+    color: #333;
+    outline: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+/* Hover */
+.filter-select:hover {
+    border-color: #007bff;
+}
+
+/* Focus */
+.filter-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+/* Khi mở dropdown */
+.filter-select option {
+    padding: 8px;
+}
+
 /* --- CUỐI CẬP NHẬT HÓA ĐƠN--- */
 /* ===== GIỚI THIỆU ===== */
 * {margin:0; padding:0; box-sizing:border-box;}
