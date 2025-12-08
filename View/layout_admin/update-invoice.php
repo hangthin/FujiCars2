@@ -4,6 +4,8 @@ $result = $data["result"];
 $message = $data["message"];
 $is_error = $data["is_error"];
 $newInsertedID = $data["newInsertedID"];
+$totalPages = $data["totalPages"];
+$currentPage = $data["currentPage"];
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -34,7 +36,8 @@ $newInsertedID = $data["newInsertedID"];
     <?php if($message): ?>
         <p style="color:<?= $is_error ? 'red':'green' ?>"><?= htmlspecialchars($message) ?></p>
     <?php endif; ?>
-    <!-- Form Thêm / Sửa -->
+
+    <!-- Form thêm/sửa -->
     <form method="POST" class="formstyle" id="invoiceFormNX">
         <input type="hidden" name="ID" id="invoiceIDNX">
         <div class="rowstyle">
@@ -55,53 +58,61 @@ $newInsertedID = $data["newInsertedID"];
         </div>
         <div class="rowstyle"><div class="groupstyle"><label>Tổng tiền</label><input type="number" name="TotalPrice" id="invoiceTotalPriceNX" required></div></div>
     </form>
+
     <!-- Nút hành động -->
     <div class="ctrlstyle">
         <button type="submit" form="invoiceFormNX" name="them" class="btnstyle btnadd" id="submitButtonNX">Thêm / Sửa</button>
+
         <form method="POST" id="multiActionForm" style="display:inline;">
             <div id="multiHiddenInputs"></div>
+
             <button type="submit" name="sua_all" class="btnstyle btnedit"><i class="fa-solid fa-check"></i> Xác nhận tất cả</button>
-            <button type="submit" name="xoa_all" class="btndel" onclick="return confirm('Bạn có chắc muốn xóa tất cả hóa đơn đã chọn?');">
-            <i class="fa-solid fa-trash"></i> Xóa tất cả</button>
-           
-    <button type="button" class="btnstyle" id="printButtonNX" style="background:#007bff;color:#fff;width:150px;height:50px;">
-        <i class="fa-solid fa-print"></i> In danh sách
-    </button>
 
+            <button type="submit" name="xoa_all" class="btndel" 
+                onclick="return confirm('Bạn có chắc muốn xóa tất cả đã chọn?');">
+                <i class="fa-solid fa-trash"></i> Xóa tất cả
+            </button>
 
+            <button type="button" class="btnstyle" id="printButtonNX" 
+                style="background:#007bff;color:#fff;width:150px;height:50px;">
+                <i class="fa-solid fa-print"></i> In danh sách
+            </button>
         </form>
     </div>
 
     <br>
     <div class="ctrlstyle">
-        <input type="text" id="searchInputNX" class="searchbox" placeholder="Tìm theo tên..." title="Nhập tên để lọc danh sách hóa đơn">
+        <input type="text" id="searchInputNX" class="searchbox" placeholder="Tìm theo tên...">
     </div>
 
-    <!-- Table hóa đơn -->
+    <!-- Table -->
     <table class="tabstyle" id="invoiceTableNX">
         <thead>
-        <tr>
-            <th><input type="checkbox" id="selectAllNX" title="Chọn tất cả"></th>
-            <th>ID</th><th>Name</th><th>Phone</th><th>Địa Chỉ</th><th>Ngày nhận</th><th>Giờ nhận</th>
-            <th>Phương thức</th><th>Trạng thái</th><th>Tổng tiền</th><th>Ngày tạo</th><th>Hành động</th>
-        </tr>
+            <tr>
+                <th><input type="checkbox" id="selectAllNX"></th>
+                <th>ID</th><th>Name</th><th>Phone</th><th>Địa Chỉ</th>
+                <th>Ngày nhận</th><th>Giờ nhận</th>
+                <th>Phương thức</th><th>Trạng thái</th>
+                <th>Tổng tiền</th><th>Ngày tạo</th><th>Hành động</th>
+            </tr>
         </thead>
         <tbody>
-        <?php while($row=$result->fetch_assoc()): 
-            $displayDateCreate = !empty($row['DateCreate']) ? date('Y-m-d', strtotime($row['DateCreate'])) : '';
-            $displayDateReceive = !empty($row['DateReceive']) ? date('Y-m-d', strtotime($row['DateReceive'])) : '';
+        <?php while($row = $result->fetch_assoc()): 
+            $displayDateCreate = $row['DateCreate'] ? date('Y-m-d', strtotime($row['DateCreate'])) : "";
+            $displayDateReceive = $row['DateReceive'] ? date('Y-m-d', strtotime($row['DateReceive'])) : "";
         ?>
-        <tr data-id="<?= $row['ID'] ?>" 
-            data-name="<?= htmlspecialchars($row['Name']) ?>" 
-            data-phone="<?= htmlspecialchars($row['Phone']) ?>" 
-            data-address="<?= htmlspecialchars($row['Address']) ?>" 
-            data-datereceive="<?= $displayDateReceive ?>" 
-            data-timereceive="<?= $row['TimeReceive'] ?>" 
-            data-method="<?= htmlspecialchars($row['Method']) ?>" 
-            data-total="<?= $row['TotalPrice'] ?>" 
+        <tr 
+            data-id="<?= $row['ID'] ?>"
+            data-name="<?= htmlspecialchars($row['Name']) ?>"
+            data-phone="<?= htmlspecialchars($row['Phone']) ?>"
+            data-address="<?= htmlspecialchars($row['Address']) ?>"
+            data-datereceive="<?= $displayDateReceive ?>"
+            data-timereceive="<?= $row['TimeReceive'] ?>"
+            data-method="<?= htmlspecialchars($row['Method']) ?>"
+            data-total="<?= $row['TotalPrice'] ?>"
             data-status="<?= $row['Status'] ?>"
-            <?= $row['Status']==0 ? 'class="highlight-new"' : '' ?> 
-            >
+            <?= $row['Status']==0 ? 'class="highlight-new"' : '' ?>
+        >
             <td><input type="checkbox" class="selectNX"></td>
             <td><?= $row['ID'] ?></td>
             <td><?= htmlspecialchars($row['Name']) ?></td>
@@ -110,27 +121,49 @@ $newInsertedID = $data["newInsertedID"];
             <td><?= $displayDateReceive ?></td>
             <td><?= $row['TimeReceive'] ?></td>
             <td><?= htmlspecialchars($row['Method']) ?></td>
-            <td><?= $row['Status']==1 ? '<i class="fa-solid fa-circle-check" style="color:lime"></i> Đã nhận' : '<i class="fa-solid fa-hourglass-half" style="color:red"></i> Đang xử lý' ?></td>
+            <td><?= $row['Status']==1 
+                ? '<i class="fa-solid fa-circle-check" style="color:lime"></i> Đã nhận' 
+                : '<i class="fa-solid fa-hourglass-half" style="color:red"></i> Đang xử lý' ?>
+            </td>
             <td><?= number_format($row['TotalPrice']) ?> VND</td>
             <td><?= $displayDateCreate ?></td>
             <td>
-                <div class="btncolstyle">
-                    <form method="POST" style="margin:0;">
-                        <input type="hidden" name="ID" value="<?= $row['ID'] ?>">
-                        <input type="hidden" name="Status" value="1">
-                        <button type="submit" name="sua" class="btnedit" <?= $row['Status']==1?'disabled':'' ?>><i class="fa-solid fa-check"></i> Xác nhận</button>
-                    </form>
-                    <form method="POST" style="margin:0;">
-                        <input type="hidden" name="ID" value="<?= $row['ID'] ?>">
-                        <button type="submit" name="xoa" class="btndel" onclick="return confirm('Bạn có chắc muốn xóa?');"><i class="fa-solid fa-trash"></i> Xóa</button>
-                    </form>
-                </div>
+                <form method="POST" style="display:inline;">
+                    <input type="hidden" name="ID" value="<?= $row['ID'] ?>">
+                    <input type="hidden" name="Status" value="1">
+                    <button type="submit" name="sua" class="btnedit" <?= $row['Status']==1?'disabled':'' ?>>
+                        <i class="fa-solid fa-check"></i> Xác nhận
+                    </button>
+                </form>
+
+                <form method="POST" style="display:inline;">
+                    <input type="hidden" name="ID" value="<?= $row['ID'] ?>">
+                    <button type="submit" name="xoa" class="btndel"
+                        onclick="return confirm('Bạn chắc chắn muốn xóa?');">
+                        <i class="fa-solid fa-trash"></i> Xóa
+                    </button>
+                </form>
             </td>
         </tr>
         <?php endwhile; ?>
         </tbody>
     </table>
+
+    <!-- PHÂN TRANG -->
+    <div style="text-align:center; margin-top:20px;">
+        <?php for($i = 1; $i <= $totalPages; $i++): ?>
+            <a href="index.php?n=update-invoice&page=<?= $i ?>"
+                style="padding:8px 12px;margin:3px;border-radius:5px;
+                background:<?= $i==$currentPage ? '#007bff':'#e0e0e0' ?>;
+                color:<?= $i==$currentPage ? '#fff':'#000' ?>;
+                text-decoration:none;">
+                <?= $i ?>
+            </a>
+        <?php endfor; ?>
+    </div>
+
 </div>
+
 <script src="js/update-invoice.js"></script>
 </body>
 </html>

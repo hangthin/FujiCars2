@@ -1,4 +1,4 @@
-<?php
+<?php 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 include("../../config/config.php");
 
@@ -106,17 +106,43 @@ if (isset($_POST['xoa_all'])) {
     }
 }
 
-// ===================== LẤY DANH SÁCH HÓA ĐƠN =====================
-$sql = "SELECT * FROM hoadon ORDER BY ID DESC";
+
+// ====================================================
+// ===============   PHÂN TRANG 5 HÓA ĐƠN   ============
+// ====================================================
+
+// Số hóa đơn mỗi trang
+$perPage = 5;
+
+// Lấy trang hiện tại (mặc định = 1)
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+
+// Tính OFFSET
+$offset = ($page - 1) * $perPage;
+
+// Tổng số hóa đơn
+$countSql = "SELECT COUNT(*) AS total FROM hoadon";
+$countResult = $conn->query($countSql);
+$totalRows = $countResult->fetch_assoc()['total'];
+
+// Tổng số trang
+$totalPages = ceil($totalRows / $perPage);
+
+// Lấy danh sách hóa đơn có phân trang
+$sql = "SELECT * FROM hoadon ORDER BY ID DESC LIMIT $perPage OFFSET $offset";
 $result = $conn->query($sql);
 
-if (!$result) die("❌ Lỗi truy vấn: " . $conn->error);
+if (!$result) {
+    die("❌ Lỗi truy vấn: " . $conn->error);
+}
 
 // Trả dữ liệu cho trang chính
 return [
     "result" => $result,
     "message" => $message,
     "is_error" => $is_error,
-    "newInsertedID" => $newInsertedID
+    "newInsertedID" => $newInsertedID,
+    "totalPages" => $totalPages,
+    "currentPage" => $page
 ];
 ?>
