@@ -28,25 +28,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_vanchuyen'])) {
     $Address   = $_POST['Address'];
     $TrangThai = $_POST['TrangThai'];
 
-    $check = $conn->query("SELECT ID FROM vanchuyen WHERE ID_HoaDon = $ID_HoaDon")->fetch_assoc();
+    // Danh sách chuẩn
+    $statuses = [
+        'Đang lấy hàng',
+        'Đã lấy hàng',
+        'Đang vận chuyển',
+        'Đã đến kho',
+        'Đang giao hàng',
+        'Đã giao hàng'
+    ];
 
-    if ($check) {
-        $stmt = $conn->prepare("UPDATE vanchuyen SET TenTK=?, Phone=?, Address=?, TrangThai=? WHERE ID_HoaDon=?");
-        $stmt->bind_param("ssssi", $TenTK, $Phone, $Address, $TrangThai, $ID_HoaDon);
-        $msg_action = "cập nhật";
-    } else {
-        $stmt = $conn->prepare("INSERT INTO vanchuyen (TenTK, ID_HoaDon, Phone, Address, TrangThai) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sisss", $TenTK, $ID_HoaDon, $Phone, $Address, $TrangThai);
-        $msg_action = "thêm";
+    // Lấy trạng thái hiện tại (nếu có)
+    $currentRow = $conn->query("SELECT TrangThai FROM vanchuyen WHERE ID_HoaDon = $ID_HoaDon")->fetch_assoc();
+    $currentStatus = $currentRow['TrangThai'] ?? null;
+
+    // ================================
+    //   KIỂM TRA RÀNG BUỘC LOGIC
+    // ================================
+    if ($currentStatus !== null) {
+        $oldIndex = array_search($currentStatus, $statuses);
+        $newIndex = array_search($TrangThai, $statuses);
+
+        // Không cho phép lùi
+        if ($newIndex < $oldIndex) {
+            $message = "Không thể quay lại trạng thái trước đó!";
+            $is_error = true;
+        }
+        // Không cho phép nhảy xa
+        elseif ($newIndex > $oldIndex + 1) {
+            $message = "Không thể bỏ qua bước! Vui lòng chọn trạng thái kế tiếp.";
+            $is_error = true;
+        }
     }
 
-    if ($stmt->execute()) {
-        $message = ucfirst($msg_action) . " vận chuyển thành công!";
-    } else {
-        $message = "Lỗi: " . $stmt->error;
-        $is_error = true;
+    // Nếu lỗi thì không lưu
+    if ($is_error) {
+        // KHÔNG chạy câu lệnh SQL bên dưới
+    } 
+    else {
+        // ================================
+        //  INSERT hoặc UPDATE Vận Chuyển
+        // ================================
+        $exists = $conn->query("SELECT ID FROM vanchuyen WHERE ID_HoaDon = $ID_HoaDon")->num_rows > 0;
+
+        if ($exists) {
+            $stmt = $conn->prepare("
+                UPDATE vanchuyen 
+                SET TenTK=?, Phone=?, Address=?, TrangThai=?, NgayCapNhat=NOW()
+                WHERE ID_HoaDon=?
+            ");
+            $stmt->bind_param("ssssi", $TenTK, $Phone, $Address, $TrangThai, $ID_HoaDon);
+            $msg_action = "Cập nhật";
+        } else {
+            $stmt = $conn->prepare("
+                INSERT INTO vanchuyen (TenTK, ID_HoaDon, Phone, Address, TrangThai, NgayCapNhat)
+                VALUES (?, ?, ?, ?, ?, NOW())
+            ");
+            $stmt->bind_param("sisss", $TenTK, $ID_HoaDon, $Phone, $Address, $TrangThai);
+            $msg_action = "Thêm";
+        }
+
+        if ($stmt->execute()) {
+            $message = "$msg_action vận chuyển thành công!";
+        } else {
+            $message = "Lỗi SQL: " . $stmt->error;
+            $is_error = true;
+        }
+        $stmt->close();
     }
-    $stmt->close();
 }
 
 // Lấy danh sách hóa đơn đã duyệt Status = 1
