@@ -68,6 +68,9 @@ switch ($n)
 	case"transport":
 		include("./View/layout_admin/transport.php");
 		break;
+	case"product-type":
+		include("./View/layout_admin/product-type.php");
+		break;
 	case"revenue":
 		include("./View/layout_admin/revenue.php");
 		break;

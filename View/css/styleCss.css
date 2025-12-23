@@ -3931,3 +3931,183 @@ h2 {
     background: #cc0000;
 }
 /*CUỐI BỘ LỌC DOANH THU */
+
+/* ==== thông kê giỏ hàng ==== */
+.kbx-body { margin:0; padding:0; font-family: 'Inter', sans-serif; background:#fff; color:#111; }
+.kbx-container { width:95%; max-width:1300px; margin:40px auto; background:#fff; padding:25px 30px; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.15); }
+.kbx-title { text-align:center; margin-bottom:25px; color:#b71c1c; font-weight:600; font-size:28px; }
+.kbx-btn-print { padding:12px 25px; background:#111; color:#fff; border:none; border-radius:8px; cursor:pointer; margin-bottom:20px; font-weight:600; font-size:16px; transition:0.3s; float:right; }
+.kbx-btn-print:hover { background:#333; }
+.kbx-btn-delete { padding:6px 12px; background:#b71c1c; color:#fff; border-radius:6px; font-size:13px; font-weight:600; display:inline-block; text-align:center; cursor:pointer; border:none; }
+.kbx-btn-delete:hover { background:#7f0000; }
+.kbx-table { width:100%; border-collapse:collapse; font-size:14px; margin-top:60px; }
+.kbx-table th, .kbx-table td { padding:12px 15px; text-align:center; border:1px solid #ddd; }
+.kbx-table th { background:#111; color:#fff; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.kbx-table tr:nth-child(even) td { background:#f9f9f9; }
+.kbx-table tr:hover td { background:#ffe6e6; transition:0.2s; }
+.kbx-table img { border-radius:6px; max-width:60px; }
+.kbx-detail { display:none; background:#f9f9f9; padding:10px; border-radius:8px; }
+.kbx-detail table { width:100%; border-collapse:collapse; }
+.kbx-detail th, .kbx-detail td { padding:8px; border:1px solid #ddd; text-align:center; font-size:13px; }
+.kbx-eye { cursor:pointer; font-size:18px; display:inline-block; transition:0.3s; }
+.kbx-eye:hover { color:#b71c1c; transform:scale(1.2); }
+@media print { .kbx-btn-print, .kbx-btn-delete, .kbx-eye { display:none; } }
+
+/* ==== CSS Overlay Thông báo ==== */
+.nxu_overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.75); z-index: 9999; }
+.nxu_box { background: #1b1b1b; color: #fff; padding: 32px 44px; border-radius: 14px; text-align: center; border: 1px solid #ff2e2e; box-shadow: 0 0 20px rgba(255,0,0,0.2); transform: scale(0.95); opacity: 0; animation: nxu_boxIn .18s forwards; }
+@keyframes nxu_boxIn { to { transform: scale(1); opacity:1; } }
+.nxu_spinner { width: 56px; height: 56px; border: 4px solid rgba(255,255,255,0.15); border-top: 4px solid #ff2e2e; border-radius: 50%; margin: 0 auto 14px; animation: nxu_spin .9s linear infinite; display: none; }
+@keyframes nxu_spin { to { transform: rotate(360deg); } }
+.nxu_checkmark, .nxu_errormark { width:90px; height:90px; margin:0 auto 14px; display:none; }
+.nxu_checkmark__circle, .nxu_errormark__circle { fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:166; stroke-dashoffset:166; }
+.nxu_checkmark__check, .nxu_errormark__cross { fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:48; stroke-dashoffset:48; }
+.nxu_checkmark__circle { stroke:#00e676; }
+.nxu_checkmark__check { stroke:#fff; }
+.nxu_errormark__circle { stroke:#ff2e2e; }
+.nxu_errormark__cross { stroke:#fff; }
+.nxu_animate-stroke .nxu_checkmark__circle,
+.nxu_animate-stroke .nxu_errormark__circle { animation: nxu_dash 0.6s cubic-bezier(.65,0,.45,1) forwards; }
+.nxu_animate-stroke .nxu_checkmark__check,
+.nxu_animate-stroke .nxu_errormark__cross { animation: nxu_dash 0.3s cubic-bezier(.65,0,.45,1) 0.6s forwards; }
+@keyframes nxu_dash { to { stroke-dashoffset:0; } }
+.nxu_box h2 { color:#ff2e2e; margin:0 0 8px; font-size:20px; }
+.nxu_box p { color:#ddd; margin:0; }
+/* ==== cuối thông kê giỏ hàng ==== */
+/* ==================== MENU ADMIN ==================== */
+.zora-sidebar {
+  background: black;
+  width: 55px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 10px;
+  overflow-x: hidden;
+  transition: width 0.3s ease;
+  z-index: 100;
+}
+
+.zora-sidebar:hover { width: 200px; }
+
+/* LOGO */
+.zora-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.zora-logo img {
+  width: 40px;
+  max-width: 160px;
+  height: auto;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+
+/* Khi hover sidebar */
+.zora-sidebar:hover .zora-logo img {
+  width: 160px; /* phóng to logo khi hover */
+}
+
+/* MENU */
+.zora-menu {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 5px;
+}
+
+/* LINK CƠ BẢN */
+.zora-menu a, .zora-drop > a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-size: 13px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+  overflow: hidden;
+  padding: 0 10px;
+}
+
+/* ICON CỐ ĐỊNH */
+.zora-menu a i, .zora-drop > a i.fa-caret-down {
+  font-size: 18px;
+  width: 35px; /* giữ icon cố định vị trí */
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+/* TEXT ẨN / HIỆN */
+.zora-menu a span, .zora-drop > a span {
+  opacity: 0;
+  transform: translateX(-10px);
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+/* Khi hover sidebar => hiện text mượt */
+.zora-sidebar:hover .zora-menu a span,
+.zora-sidebar:hover .zora-drop > a span {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* DROPDOWN ICON */
+.zora-drop > a i.fa-caret-down {
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.zora-sidebar:hover .zora-drop > a i.fa-caret-down {
+  opacity: 0.8;
+}
+
+/* DROPDOWN */
+.zora-drop-content {
+  display: none;
+  flex-direction: column;
+  background: #141414;
+}
+.zora-drop-content a {
+  padding: 10px 30px;
+  font-size: 12px;
+  color: #ccc;
+  border-left: 3px solid transparent;
+}
+.zora-drop-content a:hover {
+  background: rgba(229,57,53,0.15);
+  color: #fff;
+  border-left: 3px solid #e53935;
+}
+.zora-drop:hover .zora-drop-content { display: flex; }
+
+/* HOVER HIỆU ỨNG */
+.zora-menu a:hover {
+  background: rgba(229,57,53,0.15);
+  color: #fff;
+  border-left: 3px solid #e53935;
+}
+
+/* ==================== CUỐI MENU ADMIN ==================== */
+/* ==================== LOẠI SẢN PHẨM ==================== */
+.zc-page-body { font-family:Roboto; padding:30px; display:flex; flex-direction:column; align-items:center; }
+.zc-message { padding:12px 20px; border-radius:8px; margin-bottom:20px; width:90%; text-align:center; }
+.zc-message-success { background:#fef3f3; color:#b91c1c; border:1px solid #f87171; }
+.zc-message-error { background:#fee2e2; color:#7f1d1d; border:1px solid #fca5a5; }
+.zc-form { width:90%; padding:20px; box-shadow:0 5px 15px rgba(0,0,0,.15); display:flex; gap:15px; flex-wrap:wrap; }
+.zc-form input, .zc-form select { padding:8px 12px; border-radius:6px; border:1px solid #b91c1c; }
+.zc-btn-red { background:#b91c1c; color:#fff; border:none; padding:8px 16px; border-radius:6px; }
+.zc-btn-black { background:#111; color:#fff; border:none; padding:8px 16px; border-radius:6px; }
+.zc-table { width:90%; border-collapse:collapse; margin-top:20px; }
+.zc-table th { background:#b91c1c; color:#fff; padding:12px; }
+.zc-table td { padding:12px; border-bottom:1px solid #eee; }
+/* ==================== CUỐI LOẠI SẢN PHẨM ==================== */

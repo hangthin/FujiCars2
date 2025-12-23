@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 include "../../Controller/config/config.php";
 
@@ -28,16 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_vanchuyen'])) {
     $Address   = $_POST['Address'];
     $TrangThai = $_POST['TrangThai'];
 
-    // Danh sách chuẩn
-    $statuses = [
-        'Đang lấy hàng',
-        'Đã lấy hàng',
-        'Đang vận chuyển',
-        'Đã đến kho',
-        'Đang giao hàng',
-        'Đã giao hàng'
-    ];
-
     // Lấy trạng thái hiện tại (nếu có)
     $currentRow = $conn->query("SELECT TrangThai FROM vanchuyen WHERE ID_HoaDon = $ID_HoaDon")->fetch_assoc();
     $currentStatus = $currentRow['TrangThai'] ?? null;
@@ -61,14 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_vanchuyen'])) {
         }
     }
 
-    // Nếu lỗi thì không lưu
-    if ($is_error) {
-        // KHÔNG chạy câu lệnh SQL bên dưới
-    } 
-    else {
-        // ================================
-        //  INSERT hoặc UPDATE Vận Chuyển
-        // ================================
+    if (!$is_error) {
+        // INSERT hoặc UPDATE Vận Chuyển
         $exists = $conn->query("SELECT ID FROM vanchuyen WHERE ID_HoaDon = $ID_HoaDon")->num_rows > 0;
 
         if ($exists) {
@@ -98,14 +82,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_vanchuyen'])) {
     }
 }
 
-// Lấy danh sách hóa đơn đã duyệt Status = 1
+// ================================
+//  Lọc danh sách (nếu submit lọc)
+// ================================
+$filter_status = $_POST['filter_status'] ?? '';
+$whereClause = "h.Status = 1";
+if ($filter_status && in_array($filter_status, $statuses)) {
+    $whereClause .= " AND v.TrangThai = '$filter_status'";
+}
+
+
+// Lấy danh sách hóa đơn đã duyệt Status = 1 và lọc theo trạng thái nếu có
 $sql_bills = "SELECT h.ID, h.Name, h.Phone, h.Address, h.TotalPrice, h.DateCreate,
                      v.TrangThai AS VanChuyenStatus
               FROM hoadon h
               LEFT JOIN vanchuyen v ON v.ID_HoaDon = h.ID
-              WHERE h.Status = 1
-              ORDER BY h.DateCreate DESC";
+              WHERE $whereClause
+              ORDER BY h.ID DESC"; // ID cao nhất = hóa đơn mới nhất
 $result_bills = $conn->query($sql_bills);
+
+// ================================
+//  Lấy toàn bộ danh sách vận chuyển
+// ================================
+$sql_vanchuyen = "SELECT * FROM vanchuyen ORDER BY NgayCapNhat DESC";
+$result_vanchuyen = $conn->query($sql_vanchuyen);
+
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -118,6 +119,20 @@ $result_bills = $conn->query($sql_bills);
 <body class="unq_body_23">
 <div class="unq_container_23">
  <h1 class="nxu_header"><i class="fa fa-truck"></i> CẬP NHẬT VẬN CHUYỂN</h1>
+
+<!-- Form lọc trạng thái -->
+<form method="POST" class="unq_form_inline_23">
+    <label>Lọc trạng thái:</label>
+    <select name="filter_status">
+        <option value="">Tất cả</option>
+        <?php foreach($statuses as $st): ?>
+            <option value="<?= $st ?>" <?= $filter_status==$st ? 'selected':'' ?>><?= $st ?></option>
+        <?php endforeach; ?>
+    </select>
+    <button type="submit" class="btn"><i class="fa fa-filter"></i> Lọc</button>
+    <button type="button" class="btn" onclick="window.print();"><i class="fa fa-print"></i> In</button>
+</form>
+
 <!-- Form cập nhật vận chuyển -->
 <?php while($bill = $result_bills->fetch_assoc()): ?>
 <form method="POST" class="unq_form_inline_23">
@@ -139,38 +154,6 @@ $result_bills = $conn->query($sql_bills);
 </form>
 <?php endwhile; ?>
 
-<!-- Bảng danh sách vận chuyển -->
-<h2 class="unq_h2_23">Danh sách vận chuyển hiện có</h2>
-<table class="unq_table_23">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Tài khoản</th>
-            <th>ID Hóa đơn</th>
-            <th>Phone</th>
-            <th>Địa chỉ</th>
-            <th>Trạng thái</th>
-            <th>Ngày cập nhật</th>
-        </tr>
-    </thead>
-    <tbody>
-    <?php
-    $sql_vanchuyen = "SELECT * FROM vanchuyen ORDER BY NgayCapNhat DESC";
-    $result_vanchuyen = $conn->query($sql_vanchuyen);
-    while($v = $result_vanchuyen->fetch_assoc()):
-    ?>
-        <tr>
-            <td><?= $v['ID'] ?></td>
-            <td><?= htmlspecialchars($v['TenTK']) ?></td>
-            <td><?= htmlspecialchars($v['ID_HoaDon']) ?></td>
-            <td><?= htmlspecialchars($v['Phone']) ?></td>
-            <td><?= htmlspecialchars($v['Address']) ?></td>
-            <td><?= $v['TrangThai'] ?></td>
-            <td><?= $v['NgayCapNhat'] ?></td>
-        </tr>
-    <?php endwhile; ?>
-    </tbody>
-</table>
 </div>
 
 <!-- OVERLAY -->

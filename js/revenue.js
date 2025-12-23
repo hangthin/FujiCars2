@@ -56,25 +56,43 @@ function formatYear(dateString) {
 // =========================
 // HÀM LỌC DỮ LIỆU BIỂU ĐỒ
 // =========================
-function filterChart(type) {
+function filterChart(type, year = "") {
     const grouped = {};
 
     originalLabels.forEach((date, index) => {
+        const d = new Date(date);
+        if (year && d.getFullYear() != year) return; // lọc theo năm
+
         let key = "";
 
         if (type === "day") key = date;
-        if (type === "week") key = `Tuần ${getWeek(date)} - ${new Date(date).getFullYear()}`;
+        if (type === "week") key = `Tuần ${getWeek(date)} - ${d.getFullYear()}`;
         if (type === "month") key = formatMonth(date);
-        if (type === "year") key = formatYear(date);
+        if (type === "year") key = d.getFullYear();
 
         if (!grouped[key]) grouped[key] = 0;
         grouped[key] += originalValues[index];
     });
 
-    // Cập nhật biểu đồ
     revenueChart.data.labels = Object.keys(grouped);
     revenueChart.data.datasets[0].data = Object.values(grouped);
     revenueChart.update();
+}
+
+// =========================
+// HÀM LỌC BẢNG THEO NĂM
+// =========================
+function filterTableByYear(year = "") {
+    const tableRows = document.querySelectorAll(".twxstat-table tbody tr");
+    tableRows.forEach(row => {
+        const dateCreate = row.cells[9].textContent; // cột DateCreate
+        const rowYear = new Date(dateCreate).getFullYear();
+        if (year && rowYear != year) {
+            row.style.display = "none";
+        } else {
+            row.style.display = "";
+        }
+    });
 }
 
 // =========================
@@ -83,10 +101,12 @@ function filterChart(type) {
 document.getElementById("filter-btn").addEventListener("click", function(e) {
     e.preventDefault();
     const type = document.getElementById("filter-type").value;
+    const year = document.getElementById("filter-year").value;
 
     if (!type) return alert("Hãy chọn hình thức thống kê!");
-
-    filterChart(type);
+    
+    filterChart(type, year);
+    filterTableByYear(year);
 });
 
 // =========================
@@ -98,4 +118,7 @@ document.getElementById("reset-btn").addEventListener("click", function(e) {
     revenueChart.data.labels = originalLabels;
     revenueChart.data.datasets[0].data = originalValues;
     revenueChart.update();
+
+    const tableRows = document.querySelectorAll(".twxstat-table tbody tr");
+    tableRows.forEach(row => row.style.display = "");
 });

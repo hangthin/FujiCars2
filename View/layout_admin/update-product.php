@@ -132,16 +132,24 @@
           <input type="text" id="TenSP" name="TenSP" value="">
         </div>
         <div class="nxadmin-group">
-          <label>Loại SP:</label>
-          <select name="LoaiSP" id="LoaiSP">
-            <option value="">Chọn loại</option>
-            <option value="Sedan">Sedan</option>
-            <option value="Suv">Suv</option>
-            <option value="Bán tải">Bán tải</option>
-            <option value="Đa dụng">Đa dụng</option>
-            <option value="Hatchback">Hatchback</option>
-          </select>
-        </div>
+  <label>Loại SP:</label>
+
+  <input
+    type="text"
+    name="LoaiSP"
+    id="LoaiSP"
+    list="LoaiSPList"
+    placeholder="Nhập hoặc chọn loại sản phẩm">
+
+  <datalist id="LoaiSPList">
+    <option value="Sedan">
+    <option value="Suv">
+    <option value="Bán tải">
+    <option value="Đa dụng">
+    <option value="Hatchback">
+  </datalist>
+</div>
+
       </div>
 
       <div class="nxadmin-row">
@@ -239,7 +247,23 @@
   </div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+  const datalist = document.getElementById('LoaiSPList');
+  const rows = document.querySelectorAll('.nxadmin-table tr:not(:first-child)');
+  const setLoai = new Set();
 
+  rows.forEach(row => {
+    const loai = row.cells[5].innerText.trim(); // cột Loại SP
+    if (loai) setLoai.add(loai);
+  });
+
+  datalist.innerHTML = '';
+  setLoai.forEach(loai => {
+    const opt = document.createElement('option');
+    opt.value = loai;
+    datalist.appendChild(opt);
+  });
+});
   // ===== SEARCH REALTIME =====
   document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.querySelector('.nxadmin-search');

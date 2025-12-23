@@ -1,10 +1,13 @@
-<?php
-// Thống kêDoanhThu.php
+<?php 
 session_start();
 include("Controller/config/config.php");
 
-// Lấy dữ liệu thống kê
-$sql = "SELECT * FROM hoadon ORDER BY DateCreate ASC";
+// Lấy dữ liệu thống kê: chỉ lấy các hóa đơn đã "Đã giao hàng"
+$sql = "SELECT h.* 
+        FROM hoadon h
+        INNER JOIN vanchuyen v ON h.ID = v.ID_HoaDon
+        WHERE v.TrangThai = 'Đã giao hàng'
+        ORDER BY h.DateCreate ASC";
 $result = $conn->query($sql);
 
 $orders = [];
@@ -46,8 +49,6 @@ $chartValues = json_encode(array_values($chartData));
 <h1 class="twxstat-title">THỐNG KÊ DOANH THU</h1>
 <br>
 
-
-
 <!-- Thống kê tổng quan -->
 <div class="twxstat-stats">
     <div class="twxstat-box">
@@ -65,6 +66,7 @@ $chartValues = json_encode(array_values($chartData));
         <p>Trung bình mỗi hóa đơn</p>
     </div>
 </div>
+
 <!-- Bộ lọc -->
 <div class="twxstat-filter-box">
     <select id="filter-type" class="twxstat-select">
@@ -75,10 +77,18 @@ $chartValues = json_encode(array_values($chartData));
         <option value="year">Theo năm</option>
     </select>
 
+    <select id="filter-year" class="twxstat-select">
+        <option value="">Chọn năm (dành cho lọc năm)</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+    </select>
+
     <button id="filter-btn" class="twxstat-btn">Lọc</button>
     <button id="reset-btn" class="twxstat-btn-reset">Reset</button>
 </div>
-</br>
+<br>
+
 <!-- Biểu đồ -->
 <div class="twxstat-chart-container">
     <canvas id="twxstatRevenueChart" height="100"></canvas>

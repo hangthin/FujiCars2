@@ -2,122 +2,233 @@
 session_start();
 include "Controller/config/config.php";
 
-// Kiểm tra đăng nhập
-$loggedIn = isset($_SESSION['ID']);
-$MaKH = $loggedIn ? $_SESSION['ID'] : null;
+$message = '';
+$is_error = false;
 
-// Nếu đăng nhập thì lấy giỏ hàng từ database
-$cart = [];
-if ($loggedIn) {
-    $cartQuery = $conn->prepare("
-        SELECT g.MaSP, g.SoLuong, s.TenSP, s.HinhAnh, s.Gia
-        FROM giohang g
-        JOIN sanpham s ON g.MaSP = s.ID
-        WHERE g.MaKH = ?
-    ");
-    $cartQuery->bind_param("i", $MaKH);
-    $cartQuery->execute();
-    $cart = $cartQuery->get_result()->fetch_all(MYSQLI_ASSOC);
+/* =======================
+   XỬ LÝ XÓA GIỎ HÀNG TRỰC TIẾP QUA POST
+======================= */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    $MaGioHang = $_POST['delete_id'];
+
+    $sqlCheck = "SELECT MaGioHang FROM giohang WHERE MaGioHang = ?";
+    $stmtCheck = $conn->prepare($sqlCheck);
+    $stmtCheck->bind_param(is_numeric($MaGioHang) ? "i" : "s", $MaGioHang);
+    $stmtCheck->execute();
+    $stmtCheck->store_result();
+
+    if($stmtCheck->num_rows > 0){
+        $sqlDelete = "DELETE FROM giohang WHERE MaGioHang = ?";
+        $stmtDel = $conn->prepare($sqlDelete);
+        $stmtDel->bind_param(is_numeric($MaGioHang) ? "i" : "s", $MaGioHang);
+        if($stmtDel->execute()){
+            $message = "Xóa giỏ hàng thành công!";
+            $is_error = false;
+        } else {
+            $message = "Xóa thất bại: " . $stmtDel->error;
+            $is_error = true;
+        }
+    } else {
+        $message = "Mã giỏ hàng không tồn tại!";
+        $is_error = true;
+    }
+}
+
+/* =======================
+   LẤY THỐNG KÊ THEO NGƯỜI DÙNG
+======================= */
+$sql = "
+    SELECT 
+        nd.ID AS MaNguoiDung,
+        nd.TenTK,
+        nd.email,
+        nd.phone,
+        gh.MaGioHang,
+        sp.TenSP,
+        sp.Gia,
+        sp.HinhAnh,
+        gh.SoLuong,
+        gh.NgayCapNhat,
+        (sp.Gia * gh.SoLuong) AS ThanhTien
+    FROM nguoidung nd
+    LEFT JOIN giohang gh ON nd.ID = gh.MaKH
+    LEFT JOIN sanpham sp ON gh.MaSP = sp.ID
+    ORDER BY nd.ID, gh.NgayCapNhat DESC
+";
+
+$result = $conn->query($sql);
+$allData = $result->fetch_all(MYSQLI_ASSOC);
+
+// Gom dữ liệu theo user
+$users = [];
+foreach ($allData as $row) {
+    $uid = $row['MaNguoiDung'];
+    if (!isset($users[$uid])) {
+        $users[$uid] = [
+            'MaNguoiDung' => $uid,
+            'TenTK' => $row['TenTK'],
+            'email' => $row['email'],
+            'products' => [],
+        ];
+    }
+    if ($row['MaGioHang']) {
+        $users[$uid]['products'][] = $row;
+    }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Giỏ hàng của bạn</title>
+<title>Thống kê giỏ hàng người dùng</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="View/css/styleCss.css">
-</head>
-<body class="cartx-body">
-</br><br><br><br>
-<div class="cartx-container">
-  <h1 class="cartx-title">GIỎ HÀNG CỦA BẠN</h1>
-  <?php if (!$loggedIn): ?>
-      <!-- 🟥 CHƯA ĐĂNG NHẬP —> HIỆN THÔNG BÁO -->
-      <div class="cartx-empty-box">
-          <img src="https://cdn-icons-png.flaticon.com/512/102/102661.png">
-          <div class="cartx-empty-text">
-              Giỏ hàng trống!<br>Bạn cần đăng nhập để xem giỏ hàng.
-          </div>
-          <a class="cartx-login-btn" href="index.php?n=login">Đăng nhập ngay</a>
-      </div>
-  <?php elseif (!empty($cart)): ?>
-      <!-- 🟦 ĐÃ ĐĂNG NHẬP & CÓ GIỎ HÀNG -->
-      <?php  
-          $ids = array_column($cart, 'MaSP');
-          $idsString = implode(",", $ids);
-      ?>
-      <table class="cartx-table">
-        <thead>
-          <tr>
-            <th>Hình ảnh</th>
-            <th>Tên sản phẩm</th>
-            <th>Giá</th>
-            <th>Số lượng</th>
-            <th>Thành tiền</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-        <?php 
-        $tongTien = 0;
-        foreach ($cart as $item):
-            $thanhTien = $item['Gia'] * $item['SoLuong'];
-            $tongTien += $thanhTien;
-        ?>
-          <tr data-id="<?= $item['MaSP'] ?>">
-            <td><img src="View/img/SP/<?= htmlspecialchars($item['HinhAnh']) ?>" alt=""></td>
-            <td><?= htmlspecialchars($item['TenSP']) ?></td>
-            <td><?= number_format($item['Gia']) ?> VNĐ</td>
-            <td><?= $item['SoLuong'] ?></td>
-            <td><?= number_format($thanhTien) ?> VNĐ</td>
-            <td class="cartx-actions">
-              <button class="cartx-plus">+</button>
-              <button class="cartx-minus">−</button>
-              <button class="cartx-delete">Xóa</button>
-            </td>
-          </tr>
-        <?php endforeach; ?>
-        </tbody>
-      </table>
-      <br>
-      <div class="cartx-summary">
-          <div class="cartx-total">Tổng cộng: <?= number_format($tongTien) ?> VNĐ</div>
-          <a href="View/layout_user/pay-now.php?n=<?= $idsString ?>" class="cartx-checkout">
-              Thanh toán
-          </a>
-      </div>
-  <?php else: ?>
-      <!-- 🟨 ĐĂNG NHẬP NHƯNG GIỎ HÀNG TRỐNG -->
-      <div class="cartx-empty-box">
-          <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png">
-          <div class="cartx-empty-text">Giỏ hàng của bạn đang trống!</div>
-      </div>
-  <?php endif; ?>
-</div>
-<?php if ($loggedIn): ?>
 <script>
-// AJAX cộng trừ xóa
-document.querySelectorAll('.cartx-actions button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const row = btn.closest('tr');
-    const id = row.dataset.id;
-    let action = '';
-    if (btn.classList.contains('cartx-plus')) action = 'plus';
-    if (btn.classList.contains('cartx-minus')) action = 'minus';
-    if (btn.classList.contains('cartx-delete')) action = 'delete';
-    fetch('Controller/handle-admin/process_add_to_cart.php', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: 'action=' + action + '&id=' + id
-    })
-    .then(r => r.text())
-    .then(d => {
-      if (d.trim() === 'success') location.reload();
-      else alert('Lỗi: ' + d);
-    });
-  });
+function toggleDetail(id) {
+    const el = document.getElementById('detail-'+id);
+    el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'table-row' : 'none';
+}
+
+/* ==== Overlay JS ==== */
+function nxuShowLoadingOverlay() {
+    const overlay = document.getElementById('nxuOverlay');
+    const spinner = document.getElementById('nxuSpinner');
+    const check = document.getElementById('nxuCheck');
+    const error = document.getElementById('nxuError');
+    const title = document.getElementById('nxuMsgTitle');
+    const text = document.getElementById('nxuMsgText');
+
+    overlay.style.display = 'flex';
+    spinner.style.display = 'block';
+    check.style.display = 'none';
+    error.style.display = 'none';
+    title.textContent = 'Đang xử lý...';
+    text.textContent = 'Vui lòng chờ trong giây lát';
+}
+
+function nxuShowOverlayResult(success, message) {
+    const overlay = document.getElementById('nxuOverlay');
+    const spinner = document.getElementById('nxuSpinner');
+    const check = document.getElementById('nxuCheck');
+    const error = document.getElementById('nxuError');
+    const title = document.getElementById('nxuMsgTitle');
+    const text = document.getElementById('nxuMsgText');
+
+    spinner.style.display = 'none';
+    if(success){
+        check.style.display = 'block';
+        error.style.display = 'none';
+        check.classList.remove('nxu_animate-stroke'); void check.offsetWidth; check.classList.add('nxu_animate-stroke');
+        title.textContent = 'Thành công';
+    } else {
+        check.style.display = 'none';
+        error.style.display = 'block';
+        error.classList.remove('nxu_animate-stroke'); void error.offsetWidth; error.classList.add('nxu_animate-stroke');
+        title.textContent = 'Thất bại';
+    }
+    text.textContent = message;
+    setTimeout(()=>overlay.style.display='none',1500);
+}
+
+/* ==== Nếu có message từ PHP, hiển thị overlay ==== */
+<?php if($message): ?>
+document.addEventListener('DOMContentLoaded', ()=>{
+    nxuShowLoadingOverlay();
+    setTimeout(()=>nxuShowOverlayResult(<?= $is_error ? 'false' : 'true' ?>, "<?= addslashes($message) ?>"), 500);
 });
-</script>
 <?php endif; ?>
+</script>
+</head>
+<body class="kbx-body">
+<div class="kbx-container">
+<h1 class="kbx-title">THỐNG KÊ NGƯỜI DÙNG & GIỎ HÀNG</h1>
+
+<button onclick="window.print()" class="kbx-btn-print">🖨️ In danh sách</button>
+
+<table class="kbx-table">
+<thead>
+<tr>
+<th>ID User</th>
+<th>Tên tài khoản</th>
+<th>Email</th>
+<th>Số sản phẩm</th>
+<th>Tổng số lượng</th>
+<th>Tổng tiền</th>
+<th>Chi tiết</th>
+</tr>
+</thead>
+<tbody>
+<?php foreach($users as $user): 
+    $products = $user['products'];
+    if(count($products) == 0) continue;
+
+    $totalQty = array_sum(array_column($products, 'SoLuong'));
+    $totalMoney = array_sum(array_column($products, 'ThanhTien'));
+?>
+<tr>
+<td><?= $user['MaNguoiDung'] ?></td>
+<td><?= htmlspecialchars($user['TenTK']) ?></td>
+<td><?= htmlspecialchars($user['email']) ?></td>
+<td><?= count($products) ?></td>
+<td><?= $totalQty ?></td>
+<td><?= number_format($totalMoney) ?> VNĐ</td>
+<td><span class="kbx-eye" onclick="toggleDetail(<?= $user['MaNguoiDung'] ?>)">👁️</span></td>
+</tr>
+<tr id="detail-<?= $user['MaNguoiDung'] ?>" class="kbx-detail">
+<td colspan="7">
+<table>
+<thead>
+<tr>
+<th>Sản phẩm</th>
+<th>Hình ảnh</th>
+<th>Giá</th>
+<th>Số lượng</th>
+<th>Thành tiền</th>
+<th>Ngày cập nhật</th>
+<th>Xóa</th>
+</tr>
+</thead>
+<tbody>
+<?php foreach($products as $p): ?>
+<tr>
+<td><?= htmlspecialchars($p['TenSP']) ?></td>
+<td><img src="View/img/SP/<?= htmlspecialchars($p['HinhAnh']) ?>" width="50"></td>
+<td><?= number_format($p['Gia']) ?> VNĐ</td>
+<td><?= $p['SoLuong'] ?></td>
+<td><?= number_format($p['ThanhTien']) ?> VNĐ</td>
+<td><?= date("d/m/Y H:i", strtotime($p['NgayCapNhat'])) ?></td>
+<td>
+<form method="post" style="margin:0;" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
+<input type="hidden" name="delete_id" value="<?= $p['MaGioHang'] ?>">
+<button type="submit" class="kbx-btn-delete">❌ Xóa</button>
+</form>
+</td>
+</tr>
+<?php endforeach; ?>
+</tbody>
+</table>
+</td>
+</tr>
+<?php endforeach; ?>
+</tbody>
+</table>
+</div>
+<!-- ==== Overlay HTML ==== -->
+<div class="nxu_overlay" id="nxuOverlay">
+  <div class="nxu_box" id="nxuBox">
+    <div class="nxu_spinner" id="nxuSpinner"></div>
+    <svg class="nxu_checkmark" id="nxuCheck" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+      <circle class="nxu_checkmark__circle" cx="26" cy="26" r="25"/>
+      <path class="nxu_checkmark__check" d="M14 27l7 7 17-17"/>
+    </svg>
+    <svg class="nxu_errormark" id="nxuError" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+      <circle class="nxu_errormark__circle" cx="26" cy="26" r="25"/>
+      <path class="nxu_errormark__cross" d="M16 16 36 36 M36 16 16 36"/>
+    </svg>
+    <h2 id="nxuMsgTitle">Đang xử lý...</h2>
+    <p id="nxuMsgText">Vui lòng chờ trong giây lát</p>
+  </div>
+</div>
 </body>
 </html>
